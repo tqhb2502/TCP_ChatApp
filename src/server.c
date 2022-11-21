@@ -89,10 +89,7 @@ void *pre_login_srv(void *param) {
             break;
         case QUIT_REQ:
             printf("user quit\n");
-        }
-
-        if (pkg.ctrl_signal == QUIT_REQ) {
-            break;
+            pthread_exit(NULL);
         }
     }
 }

@@ -14,13 +14,13 @@
 //* Tín hiệu điều khiển
 // chung
 // server
-#define LOGIN_SUCC 101
-#define INCORRECT_ACC 102
-#define SIGNED_IN_ACC 103
-#define RECV_SUCC 104
+#define LOGIN_SUCC 101 /* Đăng nhập thành công */
+#define INCORRECT_ACC 102 /* Tài khoản hoặc mật khẩu không chính xác */
+#define SIGNED_IN_ACC 103 /* Tài khoản đã được đăng nhập bởi người khác */
+#define RECV_SUCC 104 /* Nhận dữ liệu thành công */
 // client
-#define LOGIN_REQ 201
-#define QUIT_REQ 202
+#define LOGIN_REQ 201 /* Yêu cầu đăng nhập */
+#define QUIT_REQ 202 /* Thoát ứng dụng */
 
 //* Cấu trúc gói tin
 typedef struct Package_ {

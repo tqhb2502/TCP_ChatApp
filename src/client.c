@@ -63,6 +63,7 @@ void ask_server(int client_socket) {
         case 2:
             pkg.ctrl_signal = QUIT_REQ;
             send(client_socket, &pkg, sizeof(pkg), 0);
+            close(client_socket);
             exit(0);
         }
     }
