@@ -3,14 +3,16 @@
 
 #include "network.h"
 #include "error.h"
+#include "account_manager.h"
 
-//* Tài khoản
-typedef struct Account_ {
-    char username[USERNAME_SIZE]; /* Tên đăng nhập */
-    char password[PASSWORD_SIZE]; /* Mật khẩu */
-    int is_signed_in; /* Tài khoản đã đăng nhập hay chưa */
-    struct Account_ *next;
-} Account;
+#define SERVER_IP "127.0.0.1"
+#define SERVER_PORT 8080
+
+//* Danh sách tài khoản kèm kết nối đến client để xử lý đăng nhập
+typedef struct Login_req_ {
+    int conn_socket;
+    Account *acc_list;
+} Login_req;
 
 //* Người dùng hoạt động
 typedef struct Active_user_ {
@@ -47,13 +49,11 @@ void make_server();
 void *pre_login_srv(void *param);
 
 /**
- * Kiểm tra tên đăng nhập, mật khẩu
+ * Nhận tên đăng nhập, mật khẩu và kiểm tra
  * @param conn_socket socket kết nối đến client
- * @param pkg con trỏ đến gói tin nhận được từ client
- * @return 0: đăng nhập thất bại
- * @return 1: đăng nhập thành công
+ * @param acc_list danh sách tài khoản
 */
-int handle_login(int conn_socket, Package *pkg);
+void handle_login(int conn_socket, Account *acc_list);
 
 //* Sau khi người dùng đăng nhập
 /**

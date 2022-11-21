@@ -1,12 +1,15 @@
 #ifndef __CLIENT_H__
 #define __CLIENT_H__
 
+#include "server.h"
 #include "network.h"
 #include "error.h"
+#include "util.h"
 
 //* Kết nối
 /**
  * Tạo socket và kết nối đến server
+ * @return socket đã kết nối đến server
 */
 int connect_to_server();
 
