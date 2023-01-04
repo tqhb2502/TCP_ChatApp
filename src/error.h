@@ -14,6 +14,8 @@
 #define ERR_INCORRECT_ACC -103 /* không mật khẩu hoặc tài khoản không chính xác */
 #define ERR_SIGNED_IN_ACC -104 /* đăng nhập vào tài khoản đã được đăng nhập từ trước */
 
+#define ERR_INVALID_RECEIVER -202 /* khong tim thay nguoi nhan hoac nhom */
+
 /**
  * Hiển thị thông báo lỗi
  * @param err_code mã lỗi
