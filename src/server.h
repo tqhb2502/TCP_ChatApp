@@ -11,12 +11,6 @@
 
 #define EMPTY_STRING "EMPTY_STRING"
 
-//* Danh sách tài khoản kèm kết nối đến client để xử lý đăng nhập
-typedef struct Login_req_ {
-    int conn_socket;
-    Account *acc_list;
-} Login_req;
-
 //* Người dùng hoạt động
 typedef struct Active_user_ {
     char username[USERNAME_SIZE]; /* Tên đăng nhập của người dùng */

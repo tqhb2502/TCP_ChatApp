@@ -6,7 +6,6 @@
 #include <pthread.h>
 
 char my_username[USERNAME_SIZE];
-int my_socket;
 
 int connect_to_server() {
 
@@ -122,10 +121,11 @@ void user_use(int client_socket) {
         report_err(ERR_CREATE_THREAD);
         exit(0);
     }
+	pthread_detach(read_st);
 
     see_active_user(client_socket);
 
-    while (1) {
+    while (login) {
 
         user_menu();
         printf("Your choice: \n");
@@ -153,9 +153,7 @@ void user_use(int client_socket) {
             see_active_user(client_socket);
             break;
         }
-        if(login == 0) break;
     }
-	pthread_detach(read_st);  
 }
 
 void *read_msg(void *param) {
@@ -263,8 +261,6 @@ void group_chat(int client_socket) {
 
 int main() {
     int client_socket = connect_to_server();
-    my_socket = client_socket;
     ask_server(client_socket);
-    close(client_socket);
     return 0;
 }

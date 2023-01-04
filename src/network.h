@@ -22,8 +22,8 @@
 #define LOGIN_REQ 201 /* Yêu cầu đăng nhập */
 #define QUIT_REQ 202 /* Thoát ứng dụng */
 
-#define MSG_SENT_SUCC 302
-#define END_CHAT 312
+#define MSG_SENT_SUCC 301
+#define END_CHAT 302
 
 #define SHOW_USER 401
 #define PRIVATE_CHAT 402

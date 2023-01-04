@@ -11,8 +11,9 @@
 
 //* Lỗi phía client
 #define ERR_CONNECT_TO_SERVER -201 /* không kết nối được đến server */
-#define ERR_INCORRECT_ACC -103 /* không mật khẩu hoặc tài khoản không chính xác */
-#define ERR_SIGNED_IN_ACC -104 /* đăng nhập vào tài khoản đã được đăng nhập từ trước */
+#define ERR_INCORRECT_ACC -202 /* không mật khẩu hoặc tài khoản không chính xác */
+#define ERR_SIGNED_IN_ACC -203 /* đăng nhập vào tài khoản đã được đăng nhập từ trước */
+#define ERR_INVALID_RECEIVER -204 /* không tìm thấy người nhận */
 
 /**
  * Hiển thị thông báo lỗi

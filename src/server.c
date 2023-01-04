@@ -6,7 +6,6 @@
 #include <pthread.h>
 
 Active_user user[MAX_USER];
-
 Account *acc_list;
 
 int create_listen_socket() {
@@ -57,18 +56,18 @@ void make_server() {
 
     acc_list = read_account_list();
     listen_socket = create_listen_socket();
+    for (int i = 0; i < MAX_USER; i++) {
+        user[i].socket = -1;
+    }
+
     printf("Server created\n");
 
     while (1) {
 
         int conn_socket = accept_conn(listen_socket);
 
-        Login_req req;
-        req.conn_socket = conn_socket;
-        req.acc_list = acc_list;
-
         pthread_t client_thr;
-        if (pthread_create(&client_thr, NULL, pre_login_srv, (void *) &req) < 0) {
+        if (pthread_create(&client_thr, NULL, pre_login_srv, (void *) &conn_socket) < 0) {
             report_err(ERR_CREATE_THREAD);
             exit(0);
         }
@@ -80,18 +79,19 @@ void make_server() {
 
 void *pre_login_srv(void *param) {
 
-    Login_req *req = (Login_req *) param;
+    int conn_socket = *((int *) param);
     Package pkg;
 
     while (1) {
 
-        recv(req->conn_socket, &pkg, sizeof(pkg), 0);
+        recv(conn_socket, &pkg, sizeof(pkg), 0);
 
         switch (pkg.ctrl_signal) {
         case LOGIN_REQ:
-            handle_login(req->conn_socket, req->acc_list);
+            handle_login(conn_socket, acc_list);
             break;
         case QUIT_REQ:
+            close(conn_socket);
             printf("user quit\n");
             pthread_exit(NULL);
         }
@@ -138,7 +138,7 @@ void handle_login(int conn_socket, Account *acc_list) {
         target_acc->is_signed_in = 1;
 
         for(int i = 0; i < MAX_USER; i++) {
-            if(user[i].socket == 0) {
+            if(user[i].socket < 0) {
                 strcpy(user[i].username, username);
                 user[i].socket = conn_socket;
                 break;
@@ -161,7 +161,7 @@ void sv_user_use(int conn_socket) {
 
     Package pkg;
     int login = 1;
-    while (1)
+    while (login)
     {
         if(recv(conn_socket, &pkg, sizeof(pkg), 0)  > 0) //printf("Receive from %d\n", conn_socket);
             printf("%d chooses %d \n", conn_socket, pkg.ctrl_signal);
@@ -189,14 +189,13 @@ void sv_user_use(int conn_socket) {
             break;
         }
         printf("Done %d of %d\n", pkg.ctrl_signal, conn_socket);
-        if(login == 0) break;
     }
 
     for(int i = 0; i < MAX_USER; i++) {
         if(user[i].socket == conn_socket) {
             Account *target_acc = find_account(acc_list, user[i].username);
             target_acc->is_signed_in = 0;
-            user[i].socket = 0;
+            user[i].socket = -1;
             break;
         }
     }
@@ -207,7 +206,7 @@ void sv_active_user(int conn_socket, Package *pkg) {
     
     char user_list[MSG_SIZE] = {0};
     for(int i = 0; i < MAX_USER; i++) {
-        if(user[i].socket != 0) {
+        if(user[i].socket > 0) {
             strcat(user_list, user[i].username);
             int len = strlen(user_list);
             user_list[len] = ' ';
@@ -225,7 +224,7 @@ void sv_private_chat(int conn_socket, Package *pkg) {
     int i = 0;
 
     for(i = 0; i < MAX_USER; i++) {
-        if(strcmp(pkg->receiver, user[i].username) == 0 && user[i].socket != 0) {
+        if(strcmp(pkg->receiver, user[i].username) == 0 && user[i].socket > 0) {
             // recv_socket = user[i].socket;
             send(user[i].socket, pkg, sizeof(*pkg), 0);
             break;
@@ -247,7 +246,7 @@ void sv_group_chat(int conn_socket, Package *pkg) {
     int i = 0;
 
     for(i = 0; i < MAX_USER; i++) {
-        if(user[i].socket != 0)
+        if(user[i].socket > 0)
             send(user[i].socket, pkg, sizeof(*pkg), 0);
     }
 

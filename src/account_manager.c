@@ -3,7 +3,6 @@
 */
 #include "account_manager.h"
 #include "error.h"
-#include "network.h"
 
 #include <stdio.h>
 #include <stdlib.h>
