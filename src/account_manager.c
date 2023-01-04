@@ -3,6 +3,7 @@
 */
 #include "account_manager.h"
 #include "error.h"
+#include "network.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -87,6 +88,7 @@ Account* read_account_list() {
 
     return list;
 }
+
 
 /**
  * Tìm kiếm tài khoản trong danh sách

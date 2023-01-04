@@ -22,6 +22,14 @@
 #define LOGIN_REQ 201
 #define QUIT_REQ 202
 
+#define MSG_SENT_SUCC 302
+#define END_CHAT 312
+
+#define SHOW_USER 401
+#define PRIVATE_CHAT 402
+#define GROUP_CHAT 403
+#define LOG_OUT 404
+
 //* Cấu trúc gói tin
 typedef struct Package_ {
     char msg[MSG_SIZE]; /* nội dung thông điệp */

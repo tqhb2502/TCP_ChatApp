@@ -7,6 +7,9 @@
 
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 8080
+#define MAX_USER 10
+
+#define EMPTY_STRING "EMPTY_STRING"
 
 //* Danh sách tài khoản kèm kết nối đến client để xử lý đăng nhập
 typedef struct Login_req_ {
@@ -56,6 +59,8 @@ void *pre_login_srv(void *param);
 void handle_login(int conn_socket, Account *acc_list);
 
 //* Sau khi người dùng đăng nhập
+void sv_user_use(int conn_socket);
+
 /**
  * Gửi cho người dùng danh sách người dùng đang online
  * @param conn_socket socket kết nối đến client
