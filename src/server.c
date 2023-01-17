@@ -230,6 +230,9 @@ void sv_user_use(int conn_socket)
         case NEW_GROUP:
             sv_new_group(conn_socket, &pkg);
             break;
+        case JOIN_GROUP:
+            sv_join_group(conn_socket, &pkg);
+            break;
         default:
             break;
         }
@@ -337,14 +340,13 @@ void sv_show_group(int conn_socket, Package *pkg)
             int group_id = user[user_id].group_id[i];
             strcat(group_list, group[group_id].group_name);
             int len = strlen(group_list);
-            group_list[len] = ' ';
+            group_list[len] = '\n';
         }
     }
     strcpy(pkg->msg, group_list);
-    printf("\n\n%s\n",pkg->msg);
     send(conn_socket, pkg, sizeof(*pkg), 0);
 }
-
+// new group
 int sv_add_group_user(Active_user *user, int group_id)
 {
     for(int i = 0; i < MAX_GROUP; i++){
@@ -375,6 +377,12 @@ void sv_new_group(int conn_socket, Package *pkg)
     pkg->ctrl_signal = MSG_MAKE_GROUP_SUCC;
     send(conn_socket, pkg, sizeof(*pkg), 0);
 }
+// join group
+void sv_join_group(int conn_socket, Package *pkg){
+    char group_name[GROUP_NAME_SIZE];
+    strcmp(group_name, pkg->msg);
+}
+
 
 // main
 int main()

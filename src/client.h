@@ -100,6 +100,14 @@ void show_group(int client_socket);
 void new_group(int client_socket);
 
 /**
+ * New group:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void join_group(int client_socket);
+
+
+/**
  * Đăng xuất khỏi tài khoản
  * @param client_socket socket đã kết nối đến server
 */

@@ -34,6 +34,8 @@
 #define SHOW_GROUP 406
 #define NEW_GROUP  407
 #define MSG_MAKE_GROUP_SUCC 408
+#define MSG_MAKE_GROUP_ERR 409
+#define JOIN_GROUP 410
 
 //* Cấu trúc gói tin
 typedef struct Package_ {

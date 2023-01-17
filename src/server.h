@@ -10,6 +10,7 @@
 #define MAX_USER 10
 #define MAX_GROUP 10
 #define EMPTY_STRING "EMPTY_STRING"
+#define GROUP_NAME_SIZE 30
 
 //* Người dùng hoạt động
 typedef struct Active_user_ {
@@ -22,7 +23,7 @@ typedef struct Active_user_ {
 typedef struct Group_ {
     Active_user group_member[MAX_USER]; /* Thành viên trong nhóm */
     int curr_num; /* Số người hiện tại trong nhóm */
-    char group_name[30]; 
+    char group_name[GROUP_NAME_SIZE]; 
 } Group;
 
 
@@ -121,6 +122,14 @@ void sv_new_group(int conn_socket, Package *pkg);
  * @param pkg con trỏ đến gói tin nhận được từ client
 */
 int sv_add_group_user(Active_user *user, int group_id);
+
+/**
+ * USER vào group của mình
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+void sv_join_group(int conn_socket, Package *pkg);
+
 
 /**
  * Xử lý chức năng đăng xuất

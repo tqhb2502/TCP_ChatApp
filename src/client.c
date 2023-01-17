@@ -225,13 +225,17 @@ void *read_msg(void *param)
             printf("%s\n", pkg.msg);
             break;
         case SHOW_GROUP:
-            printf("Your group: \n %s \n", pkg.msg);
+            printf("Your group: \n%s \n", pkg.msg);
             break;
         case NEW_GROUP:
             printf("Your name: %s \n", pkg.msg);
             break;
         case MSG_MAKE_GROUP_SUCC:
             printf("Your new group: %s \n", pkg.msg);
+            break;
+        case JOIN_GROUP:
+            printf("Current group: %s \n", pkg.msg);
+            break;
         default:
             break;
         }
@@ -304,19 +308,20 @@ void chat_all(int client_socket)
         // sleep(1);
     }
 }
-//17/01/2023
-// xu ly lua chon trong group chat menu
+// 17/01/2023
+//  xu ly lua chon trong group chat menu
 void group_chat(int client_socket)
 {
     Package pkg;
     pkg.ctrl_signal = GROUP_CHAT;
     send(client_socket, &pkg, sizeof(pkg), 0);
-    sleep(1);
     // xu ly
     int choice = 0;
 
     while (1)
     {
+        sleep(1);
+
         group_chat_menu();
         printf("Your choice: \n");
         scanf("%d", &choice);
@@ -324,36 +329,53 @@ void group_chat(int client_socket)
 
         switch (choice)
         {
-            case 1:
-                show_group(client_socket);
-                sleep(1);
-                break;
-            case 2:
-                new_group(client_socket);
-                sleep(1);
-                break;
-            default:
-                return;
-                break;
+        case 1:
+            show_group(client_socket);
+            break;
+        case 2:
+            new_group(client_socket);
+            break;
+        case 3:
+            join_group(client_socket);
+            break;
+        default:
+            return;
         }
     }
 }
 
 // hien thi nhom hien tai
-void show_group(int client_socket){
+void show_group(int client_socket)
+{
     Package pkg;
     pkg.ctrl_signal = SHOW_GROUP;
     send(client_socket, &pkg, sizeof(pkg), 0);
-    sleep(1);
+    //sleep(1);
 }
 
 // tao group moi
-void new_group(int client_socket){
+void new_group(int client_socket)
+{
     Package pkg;
     pkg.ctrl_signal = NEW_GROUP;
     send(client_socket, &pkg, sizeof(pkg), 0);
 }
 
+// vao group cua minh
+void join_group(int client_socket)
+{
+    show_group(client_socket);
+
+    Package pkg;
+    pkg.ctrl_signal = JOIN_GROUP;
+    /* chon group*/
+    char group_name[GROUP_NAME_SIZE];
+    printf("Group Name (Group n): \n");
+    fgets(group_name, GROUP_NAME_SIZE, stdin);
+    group_name[strlen(group_name) - 1] = '\0';
+    strcpy(pkg.msg, group_name);
+    send(client_socket, &pkg, sizeof(pkg), 0);
+}
 
 // main
 int main()
