@@ -72,11 +72,25 @@ void see_active_user(int client_socket);
 void private_chat(int client_socket);
 
 /**
- * Chat nhóm:
+ * Chat all:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void chat_all(int client_socket);
+
+/**
+ * Chat group:
  * - ...
  * @param client_socket socket đã kết nối đến server
 */
 void group_chat(int client_socket);
+
+/**
+ * Show group:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void show_group(int client_socket);
 
 /**
  * Đăng xuất khỏi tài khoản

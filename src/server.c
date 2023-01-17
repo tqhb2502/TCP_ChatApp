@@ -171,8 +171,8 @@ void sv_user_use(int conn_socket) {
             sv_private_chat(conn_socket, &pkg);
             break;
 
-        case GROUP_CHAT:
-            sv_group_chat(conn_socket, &pkg);
+        case CHAT_ALL:
+            sv_chat_all(conn_socket, &pkg);
             break;
 
         case SHOW_USER: 
@@ -183,6 +183,9 @@ void sv_user_use(int conn_socket) {
             
             login = 0;
             printf("%d logout\n", conn_socket);
+            break;
+        case GROUP_CHAT:
+            sv_group_chat(conn_socket, &pkg);
             break;
         
         default:
@@ -240,7 +243,7 @@ void sv_private_chat(int conn_socket, Package *pkg) {
 
 }
 
-void sv_group_chat(int conn_socket, Package *pkg) {
+void sv_chat_all(int conn_socket, Package *pkg) {
     printf("%d: %s to all: %s\n", pkg->ctrl_signal, pkg->sender, pkg->msg);
 
     int i = 0;
@@ -255,6 +258,11 @@ void sv_group_chat(int conn_socket, Package *pkg) {
     send(conn_socket, pkg, sizeof(*pkg), 0);
 }
 
+void sv_group_chat (int conn_socket, Package *pkg) {
+    strcpy(pkg->msg, "CHUC NANG TAO NHOM\n");
+    send(conn_socket, pkg, sizeof(*pkg), 0);
+    
+}
 int main() {
     make_server();
     return 0;

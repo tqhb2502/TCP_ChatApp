@@ -27,8 +27,9 @@
 
 #define SHOW_USER 401
 #define PRIVATE_CHAT 402
-#define GROUP_CHAT 403
+#define CHAT_ALL 403
 #define LOG_OUT 404
+#define GROUP_CHAT 405
 
 //* Cấu trúc gói tin
 typedef struct Package_ {

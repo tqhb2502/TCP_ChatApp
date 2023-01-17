@@ -17,6 +17,8 @@ typedef struct Active_user_ {
     int socket; /* Socket người dùng dùng để kết nối đến server */
 } Active_user;
 
+
+
 //* Khởi tạo server
 /**
  * Tạo socket của server lắng nghe kết nối từ client
@@ -70,11 +72,25 @@ void sv_active_user(int conn_socket, Package *pkg);
 void sv_private_chat(int conn_socket, Package *pkg);
 
 /**
+ * Xử lý chức năng chat all
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+void sv_chat_all(int conn_socket, Package *pkg);
+
+/**
  * Xử lý chức năng chat nhóm
  * @param conn_socket socket kết nối đến client
  * @param pkg con trỏ đến gói tin nhận được từ client
 */
 void sv_group_chat(int conn_socket, Package *pkg);
+
+/**
+ * Gửi cho người dùng nhóm hiện tại
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+void sv_show_group(int conn_socket, Package *pkg);
 
 /**
  * Xử lý chức năng đăng xuất
