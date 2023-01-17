@@ -1,5 +1,4 @@
 #include "client.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -317,10 +316,20 @@ void group_chat(int client_socket)
         switch (choice)
         {
             case 1:
+                show_group(client_socket);
+                break;
+            default:
                 break;
         }
         break;
     }
+}
+
+// hien thi nhom hien tai
+void show_group(int client_socket){
+    Package pkg;
+    pkg.ctrl_signal = SHOW_GROUP;
+    send(client_socket, &pkg, sizeof(pkg), 0);
 }
 
 int main()

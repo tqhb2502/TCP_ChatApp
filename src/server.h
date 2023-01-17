@@ -8,14 +8,22 @@
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 8080
 #define MAX_USER 10
-
+#define MAX_GROUP 10
 #define EMPTY_STRING "EMPTY_STRING"
 
 //* Người dùng hoạt động
 typedef struct Active_user_ {
     char username[USERNAME_SIZE]; /* Tên đăng nhập của người dùng */
     int socket; /* Socket người dùng dùng để kết nối đến server */
+    int group_id[MAX_GROUP]; /*Group hien tai*/ 
 } Active_user;
+
+//* Group
+typedef struct Group_ {
+    Active_user group_member[MAX_USER]; /* Thành viên trong nhóm */
+    int curr_num; /* Số người hiện tại trong nhóm */
+    char group_name[30]; 
+} Group;
 
 
 
@@ -53,6 +61,14 @@ void *pre_login_srv(void *param);
  * @param acc_list danh sách tài khoản
 */
 void handle_login(int conn_socket, Account *acc_list);
+
+/**
+ * Search user by conn_socket
+ * @param conn_socket socket kết nối đến client
+ * @param acc_list danh sách tài khoản
+*/
+Active_user serach(int conn_socket);
+
 
 //* Sau khi người dùng đăng nhập
 void sv_user_use(int conn_socket);
