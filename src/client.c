@@ -224,6 +224,14 @@ void *read_msg(void *param)
         case GROUP_CHAT:
             printf("%s\n", pkg.msg);
             break;
+        case SHOW_GROUP:
+            printf("Your group: \n %s \n", pkg.msg);
+            break;
+        case NEW_GROUP:
+            printf("Your name: %s \n", pkg.msg);
+            break;
+        case MSG_MAKE_GROUP_SUCC:
+            printf("Your new group: %s \n", pkg.msg);
         default:
             break;
         }
@@ -296,6 +304,7 @@ void chat_all(int client_socket)
         // sleep(1);
     }
 }
+//17/01/2023
 // xu ly lua chon trong group chat menu
 void group_chat(int client_socket)
 {
@@ -317,11 +326,16 @@ void group_chat(int client_socket)
         {
             case 1:
                 show_group(client_socket);
+                sleep(1);
+                break;
+            case 2:
+                new_group(client_socket);
+                sleep(1);
                 break;
             default:
+                return;
                 break;
         }
-        break;
     }
 }
 
@@ -330,8 +344,18 @@ void show_group(int client_socket){
     Package pkg;
     pkg.ctrl_signal = SHOW_GROUP;
     send(client_socket, &pkg, sizeof(pkg), 0);
+    sleep(1);
 }
 
+// tao group moi
+void new_group(int client_socket){
+    Package pkg;
+    pkg.ctrl_signal = NEW_GROUP;
+    send(client_socket, &pkg, sizeof(pkg), 0);
+}
+
+
+// main
 int main()
 {
     int client_socket = connect_to_server();

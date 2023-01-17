@@ -67,7 +67,7 @@ void handle_login(int conn_socket, Account *acc_list);
  * @param conn_socket socket kết nối đến client
  * @param acc_list danh sách tài khoản
 */
-Active_user serach(int conn_socket);
+int search_user(int conn_socket);
 
 
 //* Sau khi người dùng đăng nhập
@@ -107,6 +107,20 @@ void sv_group_chat(int conn_socket, Package *pkg);
  * @param pkg con trỏ đến gói tin nhận được từ client
 */
 void sv_show_group(int conn_socket, Package *pkg);
+
+/**
+ * Tạo group mới
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+void sv_new_group(int conn_socket, Package *pkg);
+
+/**
+ * Thêm group cho user
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+int sv_add_group_user(Active_user *user, int group_id);
 
 /**
  * Xử lý chức năng đăng xuất

@@ -93,6 +93,13 @@ void group_chat(int client_socket);
 void show_group(int client_socket);
 
 /**
+ * New group:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void new_group(int client_socket);
+
+/**
  * Đăng xuất khỏi tài khoản
  * @param client_socket socket đã kết nối đến server
 */
