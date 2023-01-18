@@ -27,7 +27,19 @@ void login_menu();
  * 2. ...
 */
 void user_menu();
+/**
+ * Menu group chat
+ * 1. Chat riêng
+ * 2. ...
+*/
+void group_chat_menu();
 
+/**
+ * sub menu group chat
+ * 1. Chat riêng
+ * 2. ...
+*/
+void sub_group_chat_menu();
 //* Chức năng trước đăng nhập
 /**
  * Yêu cầu đăng nhập hoặc thoát chương trình

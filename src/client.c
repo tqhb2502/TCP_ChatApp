@@ -63,6 +63,9 @@ void group_chat_menu()
     printf("4. Return main menu\n");
 }
 
+void sub_group_chat_menu()
+{
+}
 void ask_server(int client_socket)
 {
 
@@ -233,8 +236,11 @@ void *read_msg(void *param)
         case MSG_MAKE_GROUP_SUCC:
             printf("Your new group: %s \n", pkg.msg);
             break;
-        case JOIN_GROUP:
-            printf("Current group: %s \n", pkg.msg);
+        case JOIN_GROUP_SUCC:
+            printf("Current group: %s %d\n", pkg.msg, pkg.group_id);
+            break;
+        case ERR_GROUP_NOT_FOUND:
+            printf("Not found group: %s \n", pkg.msg);
             break;
         default:
             break;
@@ -350,7 +356,7 @@ void show_group(int client_socket)
     Package pkg;
     pkg.ctrl_signal = SHOW_GROUP;
     send(client_socket, &pkg, sizeof(pkg), 0);
-    //sleep(1);
+    // sleep(1);
 }
 
 // tao group moi
@@ -362,10 +368,11 @@ void new_group(int client_socket)
 }
 
 // vao group cua minh
+
 void join_group(int client_socket)
 {
     show_group(client_socket);
-
+    sleep(1);
     Package pkg;
     pkg.ctrl_signal = JOIN_GROUP;
     /* chon group*/
@@ -373,6 +380,7 @@ void join_group(int client_socket)
     printf("Group Name (Group n): \n");
     fgets(group_name, GROUP_NAME_SIZE, stdin);
     group_name[strlen(group_name) - 1] = '\0';
+    strcpy(pkg.sender, my_username);
     strcpy(pkg.msg, group_name);
     send(client_socket, &pkg, sizeof(pkg), 0);
 }

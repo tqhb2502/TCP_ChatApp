@@ -73,6 +73,10 @@ void make_server()
     }
     for (int i = 0; i < MAX_GROUP; i++)
     {
+        for (int j = 0; j < MAX_USER; j++)
+        {
+            group[i].group_member[j].socket = -1;
+        }
         group[i].curr_num = 0;
     }
 
@@ -324,7 +328,7 @@ int search_user(int conn_socket)
 
 void sv_group_chat(int conn_socket, Package *pkg)
 {
-    strcpy(pkg->msg, "CHUC NANG TAO NHOM\n");
+    strcpy(pkg->msg, "CHUC NANG CHAT NHOM\n");
     send(conn_socket, pkg, sizeof(*pkg), 0);
 }
 
@@ -332,7 +336,7 @@ void sv_show_group(int conn_socket, Package *pkg)
 {
     int user_id = search_user(conn_socket);
     char group_list[MSG_SIZE] = {0};
-     int group_id;
+    int group_id;
     for (int i = 0; i < MAX_GROUP; i++)
     {
         if (user[user_id].group_id[i] >= 0)
@@ -349,8 +353,10 @@ void sv_show_group(int conn_socket, Package *pkg)
 // new group
 int sv_add_group_user(Active_user *user, int group_id)
 {
-    for(int i = 0; i < MAX_GROUP; i++){
-        if(user->group_id[i] < 0 ){
+    for (int i = 0; i < MAX_GROUP; i++)
+    {
+        if (user->group_id[i] < 0)
+        {
             user->group_id[i] = group_id;
             return 1;
         }
@@ -358,6 +364,31 @@ int sv_add_group_user(Active_user *user, int group_id)
     return 0;
 }
 
+int sv_add_user(Active_user user, Group *group)
+{
+    int i = 0;
+    for (i = 0; i < MAX_USER; i++)
+    {
+        if (group->group_member[i].socket < 0)
+        {
+            group->group_member[i].socket = user.socket;
+            strcpy(group->group_member[i].username, user.username);
+            return i;
+        }
+    }
+    return 0;
+}
+
+void print_members(Group group){
+    printf("MEMBER OF GROUP %s: \n", group.group_name);
+        for (int i = 0; i < MAX_USER; i++)
+        {
+            if (group.group_member[i].socket > 0)
+            {
+                printf("%s\n", group.group_member[i].username);
+            }
+        }
+}
 void sv_new_group(int conn_socket, Package *pkg)
 {
     int user_id = search_user(conn_socket);
@@ -368,8 +399,9 @@ void sv_new_group(int conn_socket, Package *pkg)
         {
             group_id = i;
             sv_add_group_user(&user[user_id], group_id);
+            sv_add_user(user[user_id], &group[i]);
             group[i].curr_num++;
-            sprintf(group[i].group_name,"Group %d", group_id);
+            sprintf(group[i].group_name, "Group_%d", group_id);
             break;
         }
     }
@@ -377,12 +409,50 @@ void sv_new_group(int conn_socket, Package *pkg)
     pkg->ctrl_signal = MSG_MAKE_GROUP_SUCC;
     send(conn_socket, pkg, sizeof(*pkg), 0);
 }
+
 // join group
-void sv_join_group(int conn_socket, Package *pkg){
-    char group_name[GROUP_NAME_SIZE];
-    strcmp(group_name, pkg->msg);
+int sv_search_id_group(Group group[], Active_user user,char *group_name)
+{
+    int i;
+    int group_id = -1;
+    printf("%s\n", group_name);
+    for (i = 0; i < MAX_GROUP; i++)
+    {
+        if(user.group_id[i] >= 0){
+            group_id = user.group_id[i];
+        if (strcmp(group[group_id].group_name, group_name) == 0){
+            //printf("%s\n",group[i].group_name);
+            return group_id;
+        }
+        }
+    }
+    return -1;
 }
 
+void sv_join_group(int conn_socket, Package *pkg)
+{
+    char group_name[GROUP_NAME_SIZE];
+    int group_id = -1;
+    int user_id   = -1;
+
+    user_id = search_user(conn_socket);
+    strcpy(group_name, pkg->msg);
+    group_id = sv_search_id_group(group,user[user_id],group_name);
+    printf("%d\n", group_id);
+    if (group_id >= 0)
+    {
+        printf("%s JOIN GROUP %s\n", pkg->sender, group[group_id].group_name);
+        strcpy(pkg->msg, group_name);
+        pkg->ctrl_signal = JOIN_GROUP_SUCC;
+        pkg->group_id = group_id;
+        send(conn_socket, pkg, sizeof(*pkg), 0);
+    }
+    else
+    {
+        pkg->ctrl_signal = ERR_GROUP_NOT_FOUND;
+        send(conn_socket, pkg, sizeof(*pkg), 0);
+    }
+}
 
 // main
 int main()

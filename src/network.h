@@ -36,12 +36,14 @@
 #define MSG_MAKE_GROUP_SUCC 408
 #define MSG_MAKE_GROUP_ERR 409
 #define JOIN_GROUP 410
+#define JOIN_GROUP_SUCC 411
 
 //* Cấu trúc gói tin
 typedef struct Package_ {
     char msg[MSG_SIZE]; /* nội dung thông điệp */
     char sender[USERNAME_SIZE]; /* username người gửi */
     char receiver[USERNAME_SIZE]; /* username người nhận */
+    int group_id; /*id group muốn gửi*/
     int ctrl_signal; /* mã lệnh */
 } Package;
 

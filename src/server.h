@@ -20,8 +20,13 @@ typedef struct Active_user_ {
 } Active_user;
 
 //* Group
+typedef struct Member_{
+    char username[USERNAME_SIZE]; /* Tên đăng nhập của người dùng */
+    int socket; /* Socket người dùng dùng để kết nối đến server */
+} Member;
+
 typedef struct Group_ {
-    Active_user group_member[MAX_USER]; /* Thành viên trong nhóm */
+    Member group_member[MAX_USER]; /* Thành viên trong nhóm */
     int curr_num; /* Số người hiện tại trong nhóm */
     char group_name[GROUP_NAME_SIZE]; 
 } Group;
@@ -124,13 +129,34 @@ void sv_new_group(int conn_socket, Package *pkg);
 int sv_add_group_user(Active_user *user, int group_id);
 
 /**
- * USER vào group của mình
+ * Thêm user vao group
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+int sv_add_user(Active_user user, Group *group);
+
+/**
+ * Thêm USER vào group của mình
  * @param conn_socket socket kết nối đến client
  * @param pkg con trỏ đến gói tin nhận được từ client
 */
 void sv_join_group(int conn_socket, Package *pkg);
 
+/**
+ * Tìm ID group theo tên
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+int  sv_search_id_group(Group group[],Active_user user, char *group_name);
 
+
+
+/**
+ * In ra thanh vien cua nhom
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+void print_members(Group group);
 /**
  * Xử lý chức năng đăng xuất
  * @param conn_socket socket kết nối đến client
