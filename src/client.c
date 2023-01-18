@@ -5,6 +5,8 @@
 #include <pthread.h>
 
 char my_username[USERNAME_SIZE];
+char curr_group_name[GROUP_NAME_SIZE];
+int curr_group_id;
 
 int connect_to_server()
 {
@@ -63,8 +65,12 @@ void group_chat_menu()
     printf("4. Return main menu\n");
 }
 
-void sub_group_chat_menu()
+void sub_group_chat_menu(char *group_name)
 {
+    printf("\n\n****** %s ******\n", group_name);
+    printf("1. Invite your friends\n");
+    printf("2. Chat \n");
+    printf("3. Return group chat menu\n");
 }
 void ask_server(int client_socket)
 {
@@ -177,6 +183,8 @@ void user_use(int client_socket)
             // strcpy(pkg.sender, my_username);
             send(client_socket, &pkg, sizeof(pkg), 0);
             strcpy(my_username, "");
+            strcpy(curr_group_name, "");
+            curr_group_id = 0;
             break;
 
         case 4:
@@ -237,7 +245,9 @@ void *read_msg(void *param)
             printf("Your new group: %s \n", pkg.msg);
             break;
         case JOIN_GROUP_SUCC:
-            printf("Current group: %s %d\n", pkg.msg, pkg.group_id);
+            printf("Current group: %s \n", pkg.msg);
+            strcpy(curr_group_name, pkg.msg);
+            curr_group_id = pkg.group_id;
             break;
         case ERR_GROUP_NOT_FOUND:
             printf("Not found group: %s \n", pkg.msg);
@@ -383,6 +393,53 @@ void join_group(int client_socket)
     strcpy(pkg.sender, my_username);
     strcpy(pkg.msg, group_name);
     send(client_socket, &pkg, sizeof(pkg), 0);
+
+    handel_group_mess(client_socket);
+}
+
+void handel_group_mess(int client_socket)
+{
+    Package pkg;
+    pkg.ctrl_signal = HANDEL_GROUP_MESS;
+    send(client_socket, &pkg, sizeof(pkg), 0);
+    // xu ly
+    int choice = 0;
+
+    while (1)
+    {
+        sleep(1);
+
+        sub_group_chat_menu(curr_group_name);
+        printf("Your choice: \n");
+        scanf("%d", &choice);
+        clear_stdin_buff();
+
+        switch (choice)
+        {
+        case 1:
+            invite_friend(client_socket);
+            break;
+        default:
+            return;
+        }
+    }
+}
+// moi ban
+void invite_friend(int client_socket)
+{
+    see_active_user(client_socket);
+    sleep(1);
+    Package pkg;
+    char friends_name[USERNAME_SIZE];
+
+    printf("Friends name: \n");
+    fgets(friends_name, USERNAME_SIZE, stdin);
+    friends_name[strlen(friends_name) - 1] = '\0';
+    
+    strcpy(pkg.receiver, friends_name);
+    pkg.ctrl_signal = INVITE_FRIEND;
+    send(client_socket, &pkg, sizeof(pkg), 0);
+    
 }
 
 // main

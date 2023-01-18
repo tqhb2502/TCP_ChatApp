@@ -149,6 +149,13 @@ void sv_join_group(int conn_socket, Package *pkg);
 */
 int  sv_search_id_group(Group group[],Active_user user, char *group_name);
 
+/**
+ * Thêm USER vào group của mình
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+void sv_invite_friend(int conn_socket, Package *pkg);
+
 
 
 /**

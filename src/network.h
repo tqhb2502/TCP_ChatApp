@@ -37,6 +37,8 @@
 #define MSG_MAKE_GROUP_ERR 409
 #define JOIN_GROUP 410
 #define JOIN_GROUP_SUCC 411
+#define HANDEL_GROUP_MESS 412
+#define INVITE_FRIEND 413
 
 //* Cấu trúc gói tin
 typedef struct Package_ {

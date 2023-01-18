@@ -39,7 +39,7 @@ void group_chat_menu();
  * 1. Chat riêng
  * 2. ...
 */
-void sub_group_chat_menu();
+void sub_group_chat_menu(char *group_name);
 //* Chức năng trước đăng nhập
 /**
  * Yêu cầu đăng nhập hoặc thoát chương trình
@@ -112,11 +112,25 @@ void show_group(int client_socket);
 void new_group(int client_socket);
 
 /**
- * New group:
+ * Join group:
  * - ...
  * @param client_socket socket đã kết nối đến server
 */
 void join_group(int client_socket);
+
+/**
+ * Xử lý khi đã join vào nhóm:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void handel_group_mess(int client_socket);
+
+/**
+ * mời bạn:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void invite_friend(int client_socket);
 
 
 /**
