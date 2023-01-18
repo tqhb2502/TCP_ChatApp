@@ -6,7 +6,7 @@
 
 char my_username[USERNAME_SIZE];
 char curr_group_name[GROUP_NAME_SIZE];
-int curr_group_id;
+int curr_group_id = -1;
 int join_succ  = 0;
 int connect_to_server()
 {
@@ -184,7 +184,7 @@ void user_use(int client_socket)
             send(client_socket, &pkg, sizeof(pkg), 0);
             strcpy(my_username, "");
             strcpy(curr_group_name, "");
-            curr_group_id = 0;
+            curr_group_id = -1;
             break;
 
         case 4:
@@ -192,7 +192,7 @@ void user_use(int client_socket)
             break;
         // 17/01/2023
         case 5:
-            group_chat(client_socket);
+            group_chat_init(client_socket);
             break;
         default:
             printf("Ban nhap sai roi !\n");
@@ -232,15 +232,13 @@ void *read_msg(void *param)
         case MSG_SENT_SUCC:
             printf("Message sent!\n");
             break;
-        case GROUP_CHAT:
+        case GROUP_CHAT_INIT:
             printf("%s\n", pkg.msg);
             break;
         case SHOW_GROUP:
             printf("Your group: \n%s \n", pkg.msg);
             break;
-        case NEW_GROUP:
-            printf("Your name: %s \n", pkg.msg);
-            break;
+        
         case MSG_MAKE_GROUP_SUCC:
             printf("Your new group: %s \n", pkg.msg);
             break;
@@ -264,6 +262,15 @@ void *read_msg(void *param)
             break;
         case ERR_FULL_MEM:
             report_err(ERR_FULL_MEM);
+            break;
+
+        case GROUP_CHAT:
+            if(curr_group_id == pkg.group_id){
+                printf("%s: %s\n", pkg.sender,pkg.msg);
+            }
+            else{
+                printf("%s sent to Group_%d: %s\n", pkg.sender,pkg.group_id,pkg.msg);
+            }
             break;
         default:
             break;
@@ -338,10 +345,10 @@ void chat_all(int client_socket)
 }
 // 17/01/2023
 //  xu ly lua chon trong group chat menu
-void group_chat(int client_socket)
+void group_chat_init(int client_socket)
 {
     Package pkg;
-    pkg.ctrl_signal = GROUP_CHAT;
+    pkg.ctrl_signal = GROUP_CHAT_INIT;
     send(client_socket, &pkg, sizeof(pkg), 0);
     // xu ly
     int choice = 0;
@@ -434,8 +441,12 @@ void handel_group_mess(int client_socket)
         case 1:
             invite_friend(client_socket);
             break;
+        case 2:
+            group_chat(client_socket);
+            break;
         default:
             join_succ = 0;
+            curr_group_id = -1;
             return;
         }
     }
@@ -444,7 +455,6 @@ void handel_group_mess(int client_socket)
 void invite_friend(int client_socket)
 {
     see_active_user(client_socket);
-    sleep(1);
     Package pkg;
     char friends_name[USERNAME_SIZE];
 
@@ -460,6 +470,31 @@ void invite_friend(int client_socket)
     pkg.group_id = curr_group_id;
     send(client_socket, &pkg, sizeof(pkg), 0);
 }
+
+//chat trong nhom
+void group_chat(int client_socket){
+    Package pkg;
+    pkg.ctrl_signal = GROUP_CHAT;
+    pkg.group_id = curr_group_id;
+    strcpy(pkg.sender, my_username);
+    char msg[MSG_SIZE];
+    while (1)
+    {
+        printf("Message(leave blank to exit group chat): \n");
+        fgets(msg, MSG_SIZE, stdin);
+        msg[strlen(msg) - 1] = '\0';
+        if (strlen(msg) == 0)
+        {
+            break;
+        }
+
+        strcpy(pkg.msg, msg);
+        send(client_socket, &pkg, sizeof(pkg), 0);
+
+        // sleep(1);
+    }
+}
+
 
 // main
 int main()

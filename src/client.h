@@ -95,7 +95,7 @@ void chat_all(int client_socket);
  * - ...
  * @param client_socket socket đã kết nối đến server
 */
-void group_chat(int client_socket);
+void group_chat_init(int client_socket);
 
 /**
  * Show group:
@@ -131,6 +131,13 @@ void handel_group_mess(int client_socket);
  * @param client_socket socket đã kết nối đến server
 */
 void invite_friend(int client_socket);
+
+/**
+ * chat trong nhom:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void group_chat(int client_socket);
 
 
 /**

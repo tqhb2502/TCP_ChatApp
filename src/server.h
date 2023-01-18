@@ -105,7 +105,7 @@ void sv_chat_all(int conn_socket, Package *pkg);
  * @param conn_socket socket kết nối đến client
  * @param pkg con trỏ đến gói tin nhận được từ client
 */
-void sv_group_chat(int conn_socket, Package *pkg);
+void sv_group_chat_init(int conn_socket, Package *pkg);
 
 /**
  * Gửi cho người dùng nhóm hiện tại
@@ -162,6 +162,13 @@ int  sv_search_id_user(Active_user user[], char *user_name);
  * @param pkg con trỏ đến gói tin nhận được từ client
 */
 void sv_invite_friend(int conn_socket, Package *pkg);
+
+/**
+ * Chat trong nhom
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+void sv_group_chat(int conn_socket, Package *pkg);
 
 
 

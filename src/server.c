@@ -227,8 +227,8 @@ void sv_user_use(int conn_socket)
             login = 0;
             printf("%d logout\n", conn_socket);
             break;
-        case GROUP_CHAT:
-            sv_group_chat(conn_socket, &pkg);
+        case GROUP_CHAT_INIT:
+            sv_group_chat_init(conn_socket, &pkg);
             break;
         case SHOW_GROUP:
             sv_show_group(conn_socket, &pkg);
@@ -244,6 +244,9 @@ void sv_user_use(int conn_socket)
             break;
         case INVITE_FRIEND:
             sv_invite_friend(conn_socket, &pkg);
+            break;
+        case GROUP_CHAT:
+            sv_group_chat(conn_socket, &pkg);
             break;
         default:
             break;
@@ -350,7 +353,7 @@ int sv_search_id_user(Active_user user[], char *user_name)
     return -1;
 }
 
-void sv_group_chat(int conn_socket, Package *pkg)
+void sv_group_chat_init(int conn_socket, Package *pkg)
 {
     strcpy(pkg->msg, "CHUC NANG CHAT NHOM\n");
     send(conn_socket, pkg, sizeof(*pkg), 0);
@@ -376,11 +379,13 @@ void sv_show_group(int conn_socket, Package *pkg)
 }
 // new group
 
-int check_user_in_group(Active_user user, int group_id){
+int check_user_in_group(Active_user user, int group_id)
+{
     int i = 0;
-    for(i = 0; i < MAX_GROUP; i++){
-        if(user.group_id[i] == group_id)
-        return 1;
+    for (i = 0; i < MAX_GROUP; i++)
+    {
+        if (user.group_id[i] == group_id)
+            return 1;
     }
     return 0;
 }
@@ -512,7 +517,7 @@ void sv_invite_friend(int conn_socket, Package *pkg)
             send(conn_socket, pkg, sizeof(*pkg), 0);
             return;
         }
-        else if(check_user_in_group(user[friend_id], group_id))
+        else if (check_user_in_group(user[friend_id], group_id))
         {
             pkg->ctrl_signal = ERR_FULL_MEM;
             send(conn_socket, pkg, sizeof(*pkg), 0);
@@ -537,6 +542,20 @@ void sv_invite_friend(int conn_socket, Package *pkg)
         pkg->ctrl_signal = ERR_USER_NOT_FOUND;
         send(conn_socket, pkg, sizeof(*pkg), 0);
         return;
+    }
+}
+void sv_group_chat(int conn_socket, Package *pkg)
+{
+    int group_id = pkg->group_id;
+    Member mem;
+    int i = 0;
+    for (i = 0; i < MAX_USER; i++)
+    {
+        mem = group[group_id].group_member[i];
+        if (mem.socket >= 0 && mem.socket != conn_socket)
+        {
+            send(mem.socket, pkg, sizeof(*pkg), 0);
+        }
     }
 }
 

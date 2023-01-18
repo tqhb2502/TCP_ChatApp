@@ -30,7 +30,7 @@
 #define CHAT_ALL 403
 #define LOG_OUT 404
 
-#define GROUP_CHAT 405
+#define GROUP_CHAT_INIT 405
 #define SHOW_GROUP 406
 #define NEW_GROUP  407
 #define MSG_MAKE_GROUP_SUCC 408
@@ -40,6 +40,7 @@
 #define HANDEL_GROUP_MESS 412
 #define INVITE_FRIEND 413
 #define INVITE_FRIEND_SUCC 414
+#define GROUP_CHAT 415
 
 //* Cấu trúc gói tin
 typedef struct Package_ {
