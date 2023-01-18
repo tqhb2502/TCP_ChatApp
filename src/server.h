@@ -136,7 +136,7 @@ int sv_add_group_user(Active_user *user, int group_id);
 int sv_add_user(Active_user user, Group *group);
 
 /**
- * Thêm USER vào group của mình
+ * user join group
  * @param conn_socket socket kết nối đến client
  * @param pkg con trỏ đến gói tin nhận được từ client
 */
@@ -157,7 +157,7 @@ int  sv_search_id_group(Group group[],Active_user user, char *group_name);
 int  sv_search_id_user(Active_user user[], char *user_name);
 
 /**
- * Thêm USER vào group của mình
+ * Moi ban
  * @param conn_socket socket kết nối đến client
  * @param pkg con trỏ đến gói tin nhận được từ client
 */
@@ -171,6 +171,12 @@ void sv_invite_friend(int conn_socket, Package *pkg);
  * @param pkg con trỏ đến gói tin nhận được từ client
 */
 void print_members(Group group);
+/**
+ * Kiem tra nguoi dung co o trong nhom khong
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+int check_user_in_group(Active_user user, int group_id);
 /**
  * Xử lý chức năng đăng xuất
  * @param conn_socket socket kết nối đến client

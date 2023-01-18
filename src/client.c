@@ -7,7 +7,7 @@
 char my_username[USERNAME_SIZE];
 char curr_group_name[GROUP_NAME_SIZE];
 int curr_group_id;
-
+int join_succ  = 0;
 int connect_to_server()
 {
 
@@ -223,7 +223,7 @@ void *read_msg(void *param)
             break;
 
         case CHAT_ALL:
-            printf("%s: %s\n", pkg.sender, pkg.msg);
+            printf("%s to all: %s\n", pkg.sender, pkg.msg);
             break;
 
         case ERR_INVALID_RECEIVER:
@@ -248,9 +248,22 @@ void *read_msg(void *param)
             printf("Current group: %s \n", pkg.msg);
             strcpy(curr_group_name, pkg.msg);
             curr_group_id = pkg.group_id;
+            join_succ = 1;
+            break;
+        case INVITE_FRIEND:
+            printf("Attention: %s \n", pkg.msg);
             break;
         case ERR_GROUP_NOT_FOUND:
-            printf("Not found group: %s \n", pkg.msg);
+            report_err(ERR_GROUP_NOT_FOUND);
+            break;
+        case ERR_IVITE_MYSELF:
+            report_err(ERR_IVITE_MYSELF);
+            break;
+        case ERR_USER_NOT_FOUND:
+            report_err(ERR_USER_NOT_FOUND);
+            break;
+        case ERR_FULL_MEM:
+            report_err(ERR_FULL_MEM);
             break;
         default:
             break;
@@ -307,7 +320,6 @@ void chat_all(int client_socket)
     pkg.ctrl_signal = CHAT_ALL;
     strcpy(pkg.sender, my_username);
     char msg[MSG_SIZE];
-    printf("This function currently hasn't been fully implemented yet. So now it will only send to all current active user!\n");
     while (1)
     {
         printf("Message(leave blank to exit group chat): \n");
@@ -393,8 +405,11 @@ void join_group(int client_socket)
     strcpy(pkg.sender, my_username);
     strcpy(pkg.msg, group_name);
     send(client_socket, &pkg, sizeof(pkg), 0);
-
-    handel_group_mess(client_socket);
+    sleep(1);
+    if (join_succ == 1)
+        handel_group_mess(client_socket);
+    else
+        return;
 }
 
 void handel_group_mess(int client_socket)
@@ -420,6 +435,7 @@ void handel_group_mess(int client_socket)
             invite_friend(client_socket);
             break;
         default:
+            join_succ = 0;
             return;
         }
     }
@@ -435,11 +451,14 @@ void invite_friend(int client_socket)
     printf("Friends name: \n");
     fgets(friends_name, USERNAME_SIZE, stdin);
     friends_name[strlen(friends_name) - 1] = '\0';
-    
+
     strcpy(pkg.receiver, friends_name);
+    strcpy(pkg.msg, my_username);
+    strcat(pkg.msg, " Added you to ");
+    strcat(pkg.msg, curr_group_name);
     pkg.ctrl_signal = INVITE_FRIEND;
+    pkg.group_id = curr_group_id;
     send(client_socket, &pkg, sizeof(pkg), 0);
-    
 }
 
 // main

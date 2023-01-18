@@ -39,6 +39,7 @@
 #define JOIN_GROUP_SUCC 411
 #define HANDEL_GROUP_MESS 412
 #define INVITE_FRIEND 413
+#define INVITE_FRIEND_SUCC 414
 
 //* Cấu trúc gói tin
 typedef struct Package_ {

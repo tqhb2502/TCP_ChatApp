@@ -335,18 +335,20 @@ int search_user(int conn_socket)
     }
     return -1;
 }
-int  sv_search_id_user(Active_user user[], char *user_name){
+int sv_search_id_user(Active_user user[], char *user_name)
+{
     int user_id = -1;
     int i = 0;
-    for( i = 0 ; i < MAX_USER ; i++ ){
-        if(user[i].user_name == user_name && user[i].socket >= 0){
+    for (i = 0; i < MAX_USER; i++)
+    {
+        if (strcmp(user[i].username, user_name) == 0 && user[i].socket >= 0)
+        {
             user_id = i;
             return user_id;
         }
     }
     return -1;
 }
-
 
 void sv_group_chat(int conn_socket, Package *pkg)
 {
@@ -373,6 +375,15 @@ void sv_show_group(int conn_socket, Package *pkg)
     send(conn_socket, pkg, sizeof(*pkg), 0);
 }
 // new group
+
+int check_user_in_group(Active_user user, int group_id){
+    int i = 0;
+    for(i = 0; i < MAX_GROUP; i++){
+        if(user.group_id[i] == group_id)
+        return 1;
+    }
+    return 0;
+}
 int sv_add_group_user(Active_user *user, int group_id)
 {
     for (int i = 0; i < MAX_GROUP; i++)
@@ -395,6 +406,7 @@ int sv_add_user(Active_user user, Group *group)
         {
             group->group_member[i].socket = user.socket;
             strcpy(group->group_member[i].username, user.username);
+            group->curr_num++;
             return i;
         }
     }
@@ -423,7 +435,6 @@ void sv_new_group(int conn_socket, Package *pkg)
             group_id = i;
             sv_add_group_user(&user[user_id], group_id);
             sv_add_user(user[user_id], &group[i]);
-            group[i].curr_num++;
             sprintf(group[i].group_name, "Group_%d", group_id);
             break;
         }
@@ -482,13 +493,51 @@ void sv_invite_friend(int conn_socket, Package *pkg)
     char friend_name[USERNAME_SIZE];
     int user_id = search_user(conn_socket);
     int friend_id;
+    int group_id;
 
+    group_id = pkg->group_id;
     strcpy(friend_name, pkg->receiver);
     friend_id = sv_search_id_user(user, friend_name);
-    if(friend_id >= 0)
-    printf("%d %s\n", friend_id, user[friend_id].name);
+    if (friend_id >= 0)
+    {
+        if (friend_id == user_id)
+        {
+            pkg->ctrl_signal = ERR_IVITE_MYSELF;
+            send(conn_socket, pkg, sizeof(*pkg), 0);
+            return;
+        }
+        else if (group[group_id].curr_num > MAX_USER - 1)
+        {
+            pkg->ctrl_signal = ERR_FULL_MEM;
+            send(conn_socket, pkg, sizeof(*pkg), 0);
+            return;
+        }
+        else if(check_user_in_group(user[friend_id], group_id))
+        {
+            pkg->ctrl_signal = ERR_FULL_MEM;
+            send(conn_socket, pkg, sizeof(*pkg), 0);
+            return;
+        }
+        else // thanh cong
+        {
+            send(user[friend_id].socket, pkg, sizeof(*pkg), 0);
+            printf("%s add %s to %s\n", user[user_id].username,
+                   user[friend_id].username, group[group_id].group_name);
+            sv_add_group_user(&user[friend_id], group_id);
+            sv_add_user(user[friend_id], &group[group_id]);
+
+            strcpy(pkg->msg, "Successful invite");
+            pkg->ctrl_signal = INVITE_FRIEND_SUCC;
+            send(conn_socket, pkg, sizeof(*pkg), 0);
+        }
+    }
+
     else
-    printf("%s\n", NOT FOUND);
+    {
+        pkg->ctrl_signal = ERR_USER_NOT_FOUND;
+        send(conn_socket, pkg, sizeof(*pkg), 0);
+        return;
+    }
 }
 
 // main
