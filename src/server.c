@@ -335,6 +335,18 @@ int search_user(int conn_socket)
     }
     return -1;
 }
+int  sv_search_id_user(Active_user user[], char *user_name){
+    int user_id = -1;
+    int i = 0;
+    for( i = 0 ; i < MAX_USER ; i++ ){
+        if(user[i].user_name == user_name && user[i].socket >= 0){
+            user_id = i;
+            return user_id;
+        }
+    }
+    return -1;
+}
+
 
 void sv_group_chat(int conn_socket, Package *pkg)
 {
@@ -467,7 +479,16 @@ void sv_join_group(int conn_socket, Package *pkg)
 
 void sv_invite_friend(int conn_socket, Package *pkg)
 {
-    printf("%s\n", pkg->receiver);
+    char friend_name[USERNAME_SIZE];
+    int user_id = search_user(conn_socket);
+    int friend_id;
+
+    strcpy(friend_name, pkg->receiver);
+    friend_id = sv_search_id_user(user, friend_name);
+    if(friend_id >= 0)
+    printf("%d %s\n", friend_id, user[friend_id].name);
+    else
+    printf("%s\n", NOT FOUND);
 }
 
 // main

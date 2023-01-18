@@ -150,6 +150,13 @@ void sv_join_group(int conn_socket, Package *pkg);
 int  sv_search_id_group(Group group[],Active_user user, char *group_name);
 
 /**
+ * Tìm ID user theo tên
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+int  sv_search_id_user(Active_user user[], char *user_name);
+
+/**
  * Thêm USER vào group của mình
  * @param conn_socket socket kết nối đến client
  * @param pkg con trỏ đến gói tin nhận được từ client
