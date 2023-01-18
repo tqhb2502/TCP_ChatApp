@@ -27,7 +27,19 @@ void login_menu();
  * 2. ...
 */
 void user_menu();
+/**
+ * Menu group chat
+ * 1. Chat riêng
+ * 2. ...
+*/
+void group_chat_menu();
 
+/**
+ * sub menu group chat
+ * 1. Chat riêng
+ * 2. ...
+*/
+void sub_group_chat_menu(char *group_name);
 //* Chức năng trước đăng nhập
 /**
  * Yêu cầu đăng nhập hoặc thoát chương trình
@@ -72,11 +84,61 @@ void see_active_user(int client_socket);
 void private_chat(int client_socket);
 
 /**
- * Chat nhóm:
+ * Chat all:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void chat_all(int client_socket);
+
+/**
+ * Chat group:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void group_chat_init(int client_socket);
+
+/**
+ * Show group:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void show_group(int client_socket);
+
+/**
+ * New group:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void new_group(int client_socket);
+
+/**
+ * Join group:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void join_group(int client_socket);
+
+/**
+ * Xử lý khi đã join vào nhóm:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void handel_group_mess(int client_socket);
+
+/**
+ * mời bạn:
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void invite_friend(int client_socket);
+
+/**
+ * chat trong nhom:
  * - ...
  * @param client_socket socket đã kết nối đến server
 */
 void group_chat(int client_socket);
+
 
 /**
  * Đăng xuất khỏi tài khoản
