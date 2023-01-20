@@ -248,6 +248,12 @@ void sv_user_use(int conn_socket)
         case GROUP_CHAT:
             sv_group_chat(conn_socket, &pkg);
             break;
+        case GROUP_INFO:
+            sv_show_group_info(conn_socket, &pkg);
+            break;
+        case LEAVE_GROUP:
+            sv_leave_group(conn_socket, &pkg);
+            break;
         default:
             break;
         }
@@ -420,7 +426,7 @@ int sv_add_user(Active_user user, Group *group)
 
 void print_members(Group group)
 {
-    printf("MEMBER OF GROUP %s: \n", group.group_name);
+    printf("MEMBERS OF GROUP %s: \n", group.group_name);
     for (int i = 0; i < MAX_USER; i++)
     {
         if (group.group_member[i].socket > 0)
@@ -544,6 +550,8 @@ void sv_invite_friend(int conn_socket, Package *pkg)
         return;
     }
 }
+
+// chat trong nhom
 void sv_group_chat(int conn_socket, Package *pkg)
 {
     int group_id = pkg->group_id;
@@ -557,6 +565,43 @@ void sv_group_chat(int conn_socket, Package *pkg)
             send(mem.socket, pkg, sizeof(*pkg), 0);
         }
     }
+}
+
+// group info
+void sv_show_group_info(int conn_socket, Package *pkg)
+{
+    int group_id = pkg->group_id;
+    printf("Group name: %s\n", group[group_id].group_name);
+    // gui group name
+    strcpy(pkg->msg, group[group_id].group_name);
+    pkg->ctrl_signal = SHOW_GROUP_NAME;
+    send(conn_socket, pkg, sizeof(*pkg), 0);
+
+    // gui ten thanh vien
+    print_members(group[group_id]);
+
+    sprintf(pkg->msg, "NUMBER OF MEMBERS: %d", group[group_id].curr_num);
+    pkg->ctrl_signal = SHOW_GROUP_MEM;
+    send(conn_socket, pkg, sizeof(*pkg), 0);
+
+    strcpy(pkg->msg, "MEMBERS OF GROUP:");
+    pkg->ctrl_signal = SHOW_GROUP_MEM;
+    send(conn_socket, pkg, sizeof(*pkg), 0);
+    for (int i = 0; i < MAX_USER; i++)
+    {
+        if (group[group_id].group_member[i].socket > 0)
+        {
+            strcpy(pkg->msg, group[group_id].group_member[i].username);
+            pkg->ctrl_signal = SHOW_GROUP_MEM;
+            send(conn_socket, pkg, sizeof(*pkg), 0);
+        }
+    }
+}
+
+// thoat nhom
+void sv_leave_group(int conn_socket, Package *pkg)
+{
+    
 }
 
 // main

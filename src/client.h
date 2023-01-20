@@ -141,6 +141,21 @@ void group_chat(int client_socket);
 
 
 /**
+ * Hiển thị thông tin phòng
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void show_group_info(int client_socket);
+
+/**
+ * Thoat nhom
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void leave_group(int client_socket);
+
+
+/**
  * Đăng xuất khỏi tài khoản
  * @param client_socket socket đã kết nối đến server
 */

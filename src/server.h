@@ -170,6 +170,19 @@ void sv_invite_friend(int conn_socket, Package *pkg);
 */
 void sv_group_chat(int conn_socket, Package *pkg);
 
+/**
+ * Hiển thị thông tin phòng
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+void sv_show_group_info(int conn_socket, Package *pkg);
+
+/**
+ * Thoat phòng
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+void sv_leave_group(int conn_socket, Package *pkg);
 
 
 /**

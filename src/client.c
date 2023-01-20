@@ -7,7 +7,7 @@
 char my_username[USERNAME_SIZE];
 char curr_group_name[GROUP_NAME_SIZE];
 int curr_group_id = -1;
-int join_succ  = 0;
+int join_succ = 0;
 int connect_to_server()
 {
 
@@ -70,7 +70,9 @@ void sub_group_chat_menu(char *group_name)
     printf("\n\n****** %s ******\n", group_name);
     printf("1. Invite your friends\n");
     printf("2. Chat \n");
-    printf("3. Return group chat menu\n");
+    printf("3. Show group infomation \n");
+    printf("4. Leave the group chat\n");
+    printf("5. Return group chat menu\n");
 }
 void ask_server(int client_socket)
 {
@@ -238,7 +240,7 @@ void *read_msg(void *param)
         case SHOW_GROUP:
             printf("Your group: \n%s \n", pkg.msg);
             break;
-        
+
         case MSG_MAKE_GROUP_SUCC:
             printf("Your new group: %s \n", pkg.msg);
             break;
@@ -263,14 +265,24 @@ void *read_msg(void *param)
         case ERR_FULL_MEM:
             report_err(ERR_FULL_MEM);
             break;
-
+        case INVITE_FRIEND_SUCC:
+            printf("%s\n", pkg.msg);
+            break;
         case GROUP_CHAT:
-            if(curr_group_id == pkg.group_id){
-                printf("%s: %s\n", pkg.sender,pkg.msg);
+            if (curr_group_id == pkg.group_id)
+            {
+                printf("%s: %s\n", pkg.sender, pkg.msg);
             }
-            else{
-                printf("%s sent to Group_%d: %s\n", pkg.sender,pkg.group_id,pkg.msg);
+            else
+            {
+                printf("%s sent to Group_%d: %s\n", pkg.sender, pkg.group_id, pkg.msg);
             }
+            break;
+        case SHOW_GROUP_NAME:
+            printf("GROUP NAME: %s\n", pkg.msg);
+            break;
+        case SHOW_GROUP_MEM:
+            printf("%s\n", pkg.msg);
             break;
         default:
             break;
@@ -444,6 +456,12 @@ void handel_group_mess(int client_socket)
         case 2:
             group_chat(client_socket);
             break;
+        case 3:
+            show_group_info(client_socket);
+            break;
+        case 4:
+            leave_group(client_socket);
+            break;
         default:
             join_succ = 0;
             curr_group_id = -1;
@@ -471,8 +489,9 @@ void invite_friend(int client_socket)
     send(client_socket, &pkg, sizeof(pkg), 0);
 }
 
-//chat trong nhom
-void group_chat(int client_socket){
+// chat trong nhom
+void group_chat(int client_socket)
+{
     Package pkg;
     pkg.ctrl_signal = GROUP_CHAT;
     pkg.group_id = curr_group_id;
@@ -495,6 +514,21 @@ void group_chat(int client_socket){
     }
 }
 
+// hien thi thong tin phong
+void show_group_info(int client_socket)
+{
+    Package pkg;
+    pkg.ctrl_signal = GROUP_INFO;
+    pkg.group_id = curr_group_id;
+    send(client_socket, &pkg, sizeof(pkg), 0);
+}
+// Thoat nhom
+void leave_group(int client_socket){
+    Package pkg;
+    pkg.ctrl_signal = LEAVE_GROUP;
+    curr_group_id = -1;
+    send(client_socket, &pkg, sizeof(pkg), 0);
+}
 
 // main
 int main()

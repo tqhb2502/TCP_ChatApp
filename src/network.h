@@ -41,6 +41,10 @@
 #define INVITE_FRIEND 413
 #define INVITE_FRIEND_SUCC 414
 #define GROUP_CHAT 415
+#define GROUP_INFO 416
+#define SHOW_GROUP_NAME 417
+#define SHOW_GROUP_MEM 418
+#define LEAVE_GROUP 419
 
 //* Cấu trúc gói tin
 typedef struct Package_ {
