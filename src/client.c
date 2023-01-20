@@ -284,6 +284,9 @@ void *read_msg(void *param)
         case SHOW_GROUP_MEM:
             printf("%s\n", pkg.msg);
             break;
+        case LEAVE_GROUP_SUCC:
+            printf("%s\n", pkg.msg);
+            break;
         default:
             break;
         }
@@ -438,8 +441,8 @@ void handel_group_mess(int client_socket)
     send(client_socket, &pkg, sizeof(pkg), 0);
     // xu ly
     int choice = 0;
-
-    while (1)
+    int login_group = 1;
+    while (login_group)
     {
         sleep(1);
 
@@ -461,13 +464,16 @@ void handel_group_mess(int client_socket)
             break;
         case 4:
             leave_group(client_socket);
+            login_group = 0;
             break;
         default:
-            join_succ = 0;
-            curr_group_id = -1;
-            return;
+            login_group = 0;
+            break;
         }
     }
+    join_succ = 0;
+    curr_group_id = -1;
+    return;
 }
 // moi ban
 void invite_friend(int client_socket)
@@ -523,11 +529,15 @@ void show_group_info(int client_socket)
     send(client_socket, &pkg, sizeof(pkg), 0);
 }
 // Thoat nhom
-void leave_group(int client_socket){
+void leave_group(int client_socket)
+{
     Package pkg;
     pkg.ctrl_signal = LEAVE_GROUP;
-    curr_group_id = -1;
+    pkg.group_id = curr_group_id;
+    strcpy(pkg.sender, my_username);
+    // curr_group_id = -1;
     send(client_socket, &pkg, sizeof(pkg), 0);
+
 }
 
 // main

@@ -601,9 +601,45 @@ void sv_show_group_info(int conn_socket, Package *pkg)
 // thoat nhom
 void sv_leave_group(int conn_socket, Package *pkg)
 {
-    
+    int group_id = pkg->group_id;
+    int user_id = search_user(conn_socket);
+    int i = 0;
+    for (i = 0; i < MAX_USER; i++)
+    {
+        Member mem = group[group_id].group_member[i];
+        if (strcmp(mem.username, user[user_id].username) == 0)
+        {
+            group[group_id].group_member[i].socket = -1;
+            group[group_id].curr_num--;
+            if (sv_leave_group_user(&user[user_id], group_id))
+            {
+                // gui thong bao den cho moi nguoi
+                strcpy(pkg->msg,"LEAVE GROUP ");
+                pkg->ctrl_signal = GROUP_CHAT;
+                sv_group_chat(conn_socket, pkg);
+                
+                // gui lai cho user
+                strcpy(pkg->msg,"LEAVE GROUP SUCCESS: ");
+                strcat(pkg->msg, group[group_id].group_name);
+                pkg->ctrl_signal = LEAVE_GROUP_SUCC;
+                send(conn_socket, pkg, sizeof(*pkg), 0);
+            }
+        }
+    }
 }
 
+int sv_leave_group_user(Active_user *user, int group_id)
+{
+    for (int i = 0; i < MAX_GROUP; i++)
+    {
+        if (user->group_id[i] == group_id)
+        {
+            user->group_id[i] = -1;
+            return 1;
+        }
+    }
+    return 0;
+}
 // main
 int main()
 {

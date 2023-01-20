@@ -45,6 +45,7 @@
 #define SHOW_GROUP_NAME 417
 #define SHOW_GROUP_MEM 418
 #define LEAVE_GROUP 419
+#define LEAVE_GROUP_SUCC 420
 
 //* Cấu trúc gói tin
 typedef struct Package_ {

@@ -129,6 +129,13 @@ void sv_new_group(int conn_socket, Package *pkg);
 int sv_add_group_user(Active_user *user, int group_id);
 
 /**
+ * Xoa group cho user
+ * @param conn_socket socket kết nối đến client
+ * @param pkg con trỏ đến gói tin nhận được từ client
+*/
+int sv_leave_group_user(Active_user *user, int group_id);
+
+/**
  * Thêm user vao group
  * @param conn_socket socket kết nối đến client
  * @param pkg con trỏ đến gói tin nhận được từ client
