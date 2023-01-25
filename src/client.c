@@ -184,8 +184,8 @@ void user_use(int client_socket)
             pkg.ctrl_signal = LOG_OUT;
             // strcpy(pkg.sender, my_username);
             send(client_socket, &pkg, sizeof(pkg), 0);
-            strcpy(my_username, "");
-            strcpy(curr_group_name, "");
+            strcpy(my_username, "x");
+            strcpy(curr_group_name, "x");
             curr_group_id = -1;
             break;
 
@@ -539,6 +539,7 @@ void leave_group(int client_socket)
     send(client_socket, &pkg, sizeof(pkg), 0);
 
 }
+
 
 // main
 int main()
