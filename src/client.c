@@ -82,7 +82,7 @@ void ask_server(int client_socket)
 
     while (1)
     {
-
+        sleep(1);
         login_menu();
         printf("Your choice: ");
         scanf("%d", &choice);
@@ -129,7 +129,6 @@ int login(int client_socket)
     printf("Password: ");
     scanf("%s", password);
     clear_stdin_buff();
-
     strcpy(pkg.msg, username);
     send(client_socket, &pkg, sizeof(pkg), 0);
 
@@ -139,6 +138,7 @@ int login(int client_socket)
     send(client_socket, &pkg, sizeof(pkg), 0);
 
     recv(client_socket, &pkg, sizeof(pkg), 0);
+    sleep(1);
     if (pkg.ctrl_signal == LOGIN_SUCC)
         strcpy(my_username, username);
     return pkg.ctrl_signal;
@@ -187,6 +187,7 @@ void user_use(int client_socket)
             strcpy(my_username, "x");
             strcpy(curr_group_name, "x");
             curr_group_id = -1;
+            sleep(1);
             break;
         case 4:
             see_active_user(client_socket);
@@ -424,7 +425,7 @@ void join_group(int client_socket)
     pkg.ctrl_signal = JOIN_GROUP;
     /* chon group*/
     char group_name[GROUP_NAME_SIZE];
-    printf("Group Name (Group n): \n");
+    printf("Group Name (Group_n): \n");
     fgets(group_name, GROUP_NAME_SIZE, stdin);
     group_name[strlen(group_name) - 1] = '\0';
     strcpy(pkg.sender, my_username);
@@ -519,7 +520,7 @@ void group_chat(int client_socket)
         strcpy(pkg.msg, msg);
         send(client_socket, &pkg, sizeof(pkg), 0);
 
-        // sleep(1);
+        sleep(1);
     }
 }
 

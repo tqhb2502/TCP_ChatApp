@@ -203,7 +203,9 @@ void sv_leave_group(int conn_socket, Package *pkg);
  * @param conn_socket socket kết nối đến client
  * @param pkg con trỏ đến gói tin nhận được từ client
 */
-void sv_update_port_group(Active_user user, Group *group);
+void sv_update_port_group(Active_user *user, Group *group);
+
+
 
 
 /**

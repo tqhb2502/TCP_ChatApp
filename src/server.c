@@ -179,7 +179,7 @@ void handle_login(int conn_socket, Account *acc_list)
             {
                 strcpy(user[i].username, username);
                 user[i].socket = conn_socket;
-                // sv_update_port_group(user[i], group);
+                sv_update_port_group(&user[i], group);
                 break;
             }
         }
@@ -268,17 +268,18 @@ void sv_user_use(int conn_socket)
             user[i].socket = -1;
             for (int j = 0; j < MAX_GROUP; j++)
             {
-                user[i].group_id[j] = -1;
-                // if (user[i].group_id[j] >= 0)
-                // {
-                //     int group_id = user[i].group_id[j];
-                //     int user_id_group = sv_search_id_user_group(group[group_id],user[i].username);
-                //     if(user_id_group >= 0){
-                //         printf("%d %d\n",group_id,user_id_group);
-                //         group[group_id].group_member[user_id_group].socket = 0; // can cap nhat khi dang nhap lai
-                //     }
-                //     user[i].group_id[j] = -1;
-                // }
+                if (user[i].group_id[j] >= 0)
+                {
+                    int group_id = user[i].group_id[j];
+                    int user_id_group = sv_search_id_user_group(group[group_id], user[i].username);
+                    if (user_id_group >= 0)
+                    {
+                        // printf("1\n");
+                        // printf("%d %d\n", group_id, user_id_group);
+                        group[group_id].group_member[user_id_group].socket = 0; // can cap nhat khi dang nhap lai
+                    }
+                    user[i].group_id[j] = -1;
+                }
             }
             break;
         }
@@ -375,7 +376,10 @@ int sv_search_id_user_group(Group group, char *user_name)
     for (i = 0; i < MAX_USER; i++)
     {
         if (strcmp(group.group_member[i].username, user_name) == 0)
+        {
+           // printf("%d %s\n", i, user_name);
             return i;
+        }
     }
     return -1;
 }
@@ -576,16 +580,17 @@ void sv_invite_friend(int conn_socket, Package *pkg)
 void sv_group_chat(int conn_socket, Package *pkg)
 {
     int group_id = pkg->group_id;
-    Member mem;
+
     int i = 0;
     for (i = 0; i < MAX_USER; i++)
     {
-        mem = group[group_id].group_member[i];
-        if (mem.socket > 0 && mem.socket != conn_socket)
+        if (group[group_id].group_member[i].socket > 0 && group[group_id].group_member[i].socket != conn_socket)
         {
-            send(mem.socket, pkg, sizeof(*pkg), 0);
+            send(group[group_id].group_member[i].socket, pkg, sizeof(*pkg), 0);
         }
     }
+    pkg->ctrl_signal = MSG_SENT_SUCC;
+    send(conn_socket, pkg, sizeof(*pkg), 0);
 }
 
 // group info
@@ -662,19 +667,21 @@ int sv_leave_group_user(Active_user *user, int group_id)
     return 0;
 }
 
-void sv_update_port_group(Active_user user, Group *group)
+void sv_update_port_group(Active_user *user, Group *group)
 {
     int i = 0;
     int user_id_port;
     for (i = 0; i < MAX_GROUP; i++)
     {
-        user_id_port = sv_search_id_user_group(group[i], user.username);
+        user_id_port = sv_search_id_user_group(group[i], user->username);
         if (user_id_port >= 0)
         {
-            group[i].group_member[user_id_port].socket = user.socket;
+            sv_add_group_user(user, i);
+            group[i].group_member[user_id_port].socket = user->socket;
         }
     }
 }
+
 
 void sv_logout(int conn_socket, Package *pkg)
 {
