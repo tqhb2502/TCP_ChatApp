@@ -188,7 +188,6 @@ void user_use(int client_socket)
             strcpy(curr_group_name, "x");
             curr_group_id = -1;
             break;
-
         case 4:
             see_active_user(client_socket);
             break;
@@ -286,6 +285,10 @@ void *read_msg(void *param)
             break;
         case LEAVE_GROUP_SUCC:
             printf("%s\n", pkg.msg);
+            break;
+        case LOG_OUT:
+            sleep(1);
+            pthread_exit(NULL);
             break;
         default:
             break;
@@ -537,9 +540,7 @@ void leave_group(int client_socket)
     strcpy(pkg.sender, my_username);
     // curr_group_id = -1;
     send(client_socket, &pkg, sizeof(pkg), 0);
-
 }
-
 
 // main
 int main()
