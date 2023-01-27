@@ -7,7 +7,7 @@
 char my_username[USERNAME_SIZE];
 char curr_group_name[GROUP_NAME_SIZE];
 int curr_group_id = -1;
-int join_succ  = 0;
+int join_succ = 0;
 int connect_to_server()
 {
 
@@ -70,7 +70,9 @@ void sub_group_chat_menu(char *group_name)
     printf("\n\n****** %s ******\n", group_name);
     printf("1. Invite your friends\n");
     printf("2. Chat \n");
-    printf("3. Return group chat menu\n");
+    printf("3. Show group infomation \n");
+    printf("4. Leave the group chat\n");
+    printf("5. Return group chat menu\n");
 }
 void ask_server(int client_socket)
 {
@@ -80,7 +82,7 @@ void ask_server(int client_socket)
 
     while (1)
     {
-
+        sleep(1);
         login_menu();
         printf("Your choice: ");
         scanf("%d", &choice);
@@ -127,7 +129,6 @@ int login(int client_socket)
     printf("Password: ");
     scanf("%s", password);
     clear_stdin_buff();
-
     strcpy(pkg.msg, username);
     send(client_socket, &pkg, sizeof(pkg), 0);
 
@@ -137,6 +138,7 @@ int login(int client_socket)
     send(client_socket, &pkg, sizeof(pkg), 0);
 
     recv(client_socket, &pkg, sizeof(pkg), 0);
+    sleep(1);
     if (pkg.ctrl_signal == LOGIN_SUCC)
         strcpy(my_username, username);
     return pkg.ctrl_signal;
@@ -182,11 +184,11 @@ void user_use(int client_socket)
             pkg.ctrl_signal = LOG_OUT;
             // strcpy(pkg.sender, my_username);
             send(client_socket, &pkg, sizeof(pkg), 0);
-            strcpy(my_username, "");
-            strcpy(curr_group_name, "");
+            strcpy(my_username, "x");
+            strcpy(curr_group_name, "x");
             curr_group_id = -1;
+            sleep(1);
             break;
-
         case 4:
             see_active_user(client_socket);
             break;
@@ -238,7 +240,7 @@ void *read_msg(void *param)
         case SHOW_GROUP:
             printf("Your group: \n%s \n", pkg.msg);
             break;
-        
+
         case MSG_MAKE_GROUP_SUCC:
             printf("Your new group: %s \n", pkg.msg);
             break;
@@ -263,14 +265,31 @@ void *read_msg(void *param)
         case ERR_FULL_MEM:
             report_err(ERR_FULL_MEM);
             break;
-
+        case INVITE_FRIEND_SUCC:
+            printf("%s\n", pkg.msg);
+            break;
         case GROUP_CHAT:
-            if(curr_group_id == pkg.group_id){
-                printf("%s: %s\n", pkg.sender,pkg.msg);
+            if (curr_group_id == pkg.group_id)
+            {
+                printf("%s: %s\n", pkg.sender, pkg.msg);
             }
-            else{
-                printf("%s sent to Group_%d: %s\n", pkg.sender,pkg.group_id,pkg.msg);
+            else
+            {
+                printf("%s sent to Group_%d: %s\n", pkg.sender, pkg.group_id, pkg.msg);
             }
+            break;
+        case SHOW_GROUP_NAME:
+            printf("GROUP NAME: %s\n", pkg.msg);
+            break;
+        case SHOW_GROUP_MEM:
+            printf("%s\n", pkg.msg);
+            break;
+        case LEAVE_GROUP_SUCC:
+            printf("%s\n", pkg.msg);
+            break;
+        case LOG_OUT:
+            sleep(1);
+            pthread_exit(NULL);
             break;
         default:
             break;
@@ -406,7 +425,7 @@ void join_group(int client_socket)
     pkg.ctrl_signal = JOIN_GROUP;
     /* chon group*/
     char group_name[GROUP_NAME_SIZE];
-    printf("Group Name (Group n): \n");
+    printf("Group Name (Group_n): \n");
     fgets(group_name, GROUP_NAME_SIZE, stdin);
     group_name[strlen(group_name) - 1] = '\0';
     strcpy(pkg.sender, my_username);
@@ -426,8 +445,8 @@ void handel_group_mess(int client_socket)
     send(client_socket, &pkg, sizeof(pkg), 0);
     // xu ly
     int choice = 0;
-
-    while (1)
+    int login_group = 1;
+    while (login_group)
     {
         sleep(1);
 
@@ -444,12 +463,21 @@ void handel_group_mess(int client_socket)
         case 2:
             group_chat(client_socket);
             break;
+        case 3:
+            show_group_info(client_socket);
+            break;
+        case 4:
+            leave_group(client_socket);
+            login_group = 0;
+            break;
         default:
-            join_succ = 0;
-            curr_group_id = -1;
-            return;
+            login_group = 0;
+            break;
         }
     }
+    join_succ = 0;
+    curr_group_id = -1;
+    return;
 }
 // moi ban
 void invite_friend(int client_socket)
@@ -471,8 +499,9 @@ void invite_friend(int client_socket)
     send(client_socket, &pkg, sizeof(pkg), 0);
 }
 
-//chat trong nhom
-void group_chat(int client_socket){
+// chat trong nhom
+void group_chat(int client_socket)
+{
     Package pkg;
     pkg.ctrl_signal = GROUP_CHAT;
     pkg.group_id = curr_group_id;
@@ -491,10 +520,28 @@ void group_chat(int client_socket){
         strcpy(pkg.msg, msg);
         send(client_socket, &pkg, sizeof(pkg), 0);
 
-        // sleep(1);
+        sleep(1);
     }
 }
 
+// hien thi thong tin phong
+void show_group_info(int client_socket)
+{
+    Package pkg;
+    pkg.ctrl_signal = GROUP_INFO;
+    pkg.group_id = curr_group_id;
+    send(client_socket, &pkg, sizeof(pkg), 0);
+}
+// Thoat nhom
+void leave_group(int client_socket)
+{
+    Package pkg;
+    pkg.ctrl_signal = LEAVE_GROUP;
+    pkg.group_id = curr_group_id;
+    strcpy(pkg.sender, my_username);
+    // curr_group_id = -1;
+    send(client_socket, &pkg, sizeof(pkg), 0);
+}
 
 // main
 int main()
