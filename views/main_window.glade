@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkWindow" id="main_window">
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkFixed" id="main_fixed">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="width-request">150</property>
+            <property name="height-request">34</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Nhóm</property>
+            <attributes>
+              <attribute name="font-desc" value="Sans Italic 10"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="y">268</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width-request">150</property>
+            <property name="height-request">34</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Online</property>
+            <attributes>
+              <attribute name="font-desc" value="Sans Italic 10"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="y">34</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="private_chat_btn">
+            <property name="label" translatable="yes">Chat Riêng</property>
+            <property name="width-request">130</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="x">280</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="group_chat_btn">
+            <property name="label" translatable="yes">Chat Nhóm</property>
+            <property name="width-request">130</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="x">410</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="refresh_list_btn">
+            <property name="label" translatable="yes">Làm Mới</property>
+            <property name="width-request">130</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="x">540</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="cur_user_label">
+            <property name="width-request">150</property>
+            <property name="height-request">34</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Hello, huytq</property>
+            <property name="wrap">True</property>
+            <attributes>
+              <attribute name="font-desc" value="Sans Bold Italic 10"/>
+            </attributes>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="logout_btn">
+            <property name="label" translatable="yes">Đăng Xuất</property>
+            <property name="width-request">130</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="x">670</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width-request">130</property>
+            <property name="height-request">34</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Chức năng chung:</property>
+            <property name="wrap">True</property>
+          </object>
+          <packing>
+            <property name="x">150</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width-request">130</property>
+            <property name="height-request">34</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Chức năng nhóm:</property>
+            <property name="wrap">True</property>
+          </object>
+          <packing>
+            <property name="x">150</property>
+            <property name="y">34</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="group_invite_btn">
+            <property name="label" translatable="yes">Mời Vào Nhóm</property>
+            <property name="width-request">173</property>
+            <property name="height-request">34</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="x">280</property>
+            <property name="y">34</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="group_info_btn">
+            <property name="label" translatable="yes">Thông Tin Nhóm</property>
+            <property name="width-request">174</property>
+            <property name="height-request">34</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="x">453</property>
+            <property name="y">34</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="group_leave_btn">
+            <property name="label" translatable="yes">Rời Nhóm</property>
+            <property name="width-request">173</property>
+            <property name="height-request">34</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="x">627</property>
+            <property name="y">34</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="cur_chat_label">
+            <property name="width-request">130</property>
+            <property name="height-request">34</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">huytq</property>
+            <property name="wrap">True</property>
+            <attributes>
+              <attribute name="font-desc" value="Sans Bold Italic 10"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">150</property>
+            <property name="y">68</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="send_entry">
+            <property name="width-request">550</property>
+            <property name="height-request">40</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="margin-bottom">5</property>
+          </object>
+          <packing>
+            <property name="x">155</property>
+            <property name="y">457</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="send_btn">
+            <property name="label" translatable="yes">Gửi</property>
+            <property name="width-request">85</property>
+            <property name="height-request">40</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+          </object>
+          <packing>
+            <property name="x">710</property>
+            <property name="y">457</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="recv_msg_sw">
+            <property name="width-request">640</property>
+            <property name="height-request">345</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="shadow-type">in</property>
+            <child>
+              <object class="GtkTextView" id="recv_msg_tv">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="editable">False</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">155</property>
+            <property name="y">107</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="online_sw">
+            <property name="width-request">145</property>
+            <property name="height-request">195</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="shadow-type">in</property>
+            <child>
+              <object class="GtkTextView" id="online_tv">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="editable">False</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">68</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="group_sw">
+            <property name="width-request">145</property>
+            <property name="height-request">195</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="shadow-type">in</property>
+            <child>
+              <object class="GtkTextView" id="group_tv">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="editable">False</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">302</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

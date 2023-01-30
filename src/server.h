@@ -9,7 +9,8 @@
 #define SERVER_PORT 8080
 #define MAX_USER 10
 #define MAX_GROUP 10
-#define EMPTY_STRING "EMPTY_STRING"
+#define NULL_STRING "#NULL_STRING#"
+#define SERVER_SYSTEM_USERNAME "#server_system#"
 #define GROUP_NAME_SIZE 30
 
 //* Người dùng hoạt động

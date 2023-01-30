@@ -316,6 +316,7 @@ void sv_private_chat(int conn_socket, Package *pkg)
         {
             // recv_socket = user[i].socket;
             send(user[i].socket, pkg, sizeof(*pkg), 0);
+            printf("sent to receiver\n");
             break;
         }
     }
@@ -402,7 +403,7 @@ void sv_show_group(int conn_socket, Package *pkg)
             int group_id = user[user_id].group_id[i];
             strcat(group_list, group[group_id].group_name);
             int len = strlen(group_list);
-            group_list[len] = '\n';
+            group_list[len] = ' ';
         }
     }
     strcpy(pkg->msg, group_list);
@@ -550,21 +551,30 @@ void sv_invite_friend(int conn_socket, Package *pkg)
         }
         else if (check_user_in_group(user[friend_id], group_id))
         {
-            pkg->ctrl_signal = ERR_FULL_MEM;
+            pkg->ctrl_signal = ERR_IS_MEM;
             send(conn_socket, pkg, sizeof(*pkg), 0);
             return;
         }
         else // thanh cong
         {
+            strcpy(pkg->msg, group[group_id].group_name);
+
             send(user[friend_id].socket, pkg, sizeof(*pkg), 0);
             printf("%s add %s to %s\n", user[user_id].username,
                    user[friend_id].username, group[group_id].group_name);
             sv_add_group_user(&user[friend_id], group_id);
             sv_add_user(user[friend_id], &group[group_id]);
 
-            strcpy(pkg->msg, "Successful invite");
             pkg->ctrl_signal = INVITE_FRIEND_SUCC;
             send(conn_socket, pkg, sizeof(*pkg), 0);
+
+            // gui thong bao den cho moi nguoi
+            memset(pkg->sender, '\0', sizeof(pkg->sender));
+            strcpy(pkg->sender, SERVER_SYSTEM_USERNAME);
+            memset(pkg->msg, '\0', sizeof(pkg->msg));
+            sprintf(pkg->msg, "\"%s\" đã thêm \"%s\" vào nhóm.", user[user_id].username, user[friend_id].username);
+            pkg->ctrl_signal = GROUP_CHAT;
+            sv_group_chat(conn_socket, pkg);
         }
     }
 
@@ -584,7 +594,7 @@ void sv_group_chat(int conn_socket, Package *pkg)
     int i = 0;
     for (i = 0; i < MAX_USER; i++)
     {
-        if (group[group_id].group_member[i].socket > 0 && group[group_id].group_member[i].socket != conn_socket)
+        if (group[group_id].group_member[i].socket > 0)// && group[group_id].group_member[i].socket != conn_socket)
         {
             send(group[group_id].group_member[i].socket, pkg, sizeof(*pkg), 0);
         }
@@ -596,6 +606,10 @@ void sv_group_chat(int conn_socket, Package *pkg)
 // group info
 void sv_show_group_info(int conn_socket, Package *pkg)
 {
+    // giao dien (bat dau gui thong tin)
+    pkg->ctrl_signal = SHOW_GROUP_INFO_START;
+    send(conn_socket, pkg, sizeof(*pkg), 0);
+
     int group_id = pkg->group_id;
     printf("Group name: %s\n", group[group_id].group_name);
     // gui group name
@@ -606,22 +620,26 @@ void sv_show_group_info(int conn_socket, Package *pkg)
     // gui ten thanh vien
     print_members(group[group_id]);
 
-    sprintf(pkg->msg, "NUMBER OF MEMBERS: %d", group[group_id].curr_num);
-    pkg->ctrl_signal = SHOW_GROUP_MEM;
+    sprintf(pkg->msg, "%d", group[group_id].curr_num);
+    pkg->ctrl_signal = SHOW_GROUP_MEM_NUMBER;
     send(conn_socket, pkg, sizeof(*pkg), 0);
 
-    strcpy(pkg->msg, "MEMBERS OF GROUP:");
-    pkg->ctrl_signal = SHOW_GROUP_MEM;
-    send(conn_socket, pkg, sizeof(*pkg), 0);
+    // strcpy(pkg->msg, "MEMBERS OF GROUP:");
+    // pkg->ctrl_signal = SHOW_GROUP_MEM_USERNAME;
+    // send(conn_socket, pkg, sizeof(*pkg), 0);
     for (int i = 0; i < MAX_USER; i++)
     {
         if (group[group_id].group_member[i].socket >= 0)
         {
             strcpy(pkg->msg, group[group_id].group_member[i].username);
-            pkg->ctrl_signal = SHOW_GROUP_MEM;
+            pkg->ctrl_signal = SHOW_GROUP_MEM_USERNAME;
             send(conn_socket, pkg, sizeof(*pkg), 0);
         }
     }
+
+    // giao dien (gui thong tin xong)
+    pkg->ctrl_signal = SHOW_GROUP_INFO_END;
+    send(conn_socket, pkg, sizeof(*pkg), 0);
 }
 
 // thoat nhom
@@ -636,20 +654,25 @@ void sv_leave_group(int conn_socket, Package *pkg)
         if (strcmp(mem.username, user[user_id].username) == 0)
         {
             group[group_id].group_member[i].socket = -1;
+            strcpy(group[group_id].group_member[i].username, NULL_STRING);
             group[group_id].curr_num--;
             if (sv_leave_group_user(&user[user_id], group_id))
             {
-                // gui thong bao den cho moi nguoi
-                strcpy(pkg->msg, "LEAVE GROUP ");
-                pkg->ctrl_signal = GROUP_CHAT;
-                sv_group_chat(conn_socket, pkg);
-
                 // gui lai cho user
                 strcpy(pkg->msg, "LEAVE GROUP SUCCESS: ");
                 strcat(pkg->msg, group[group_id].group_name);
                 pkg->ctrl_signal = LEAVE_GROUP_SUCC;
                 send(conn_socket, pkg, sizeof(*pkg), 0);
+
+                // gui thong bao den cho moi nguoi
+                memset(pkg->sender, '\0', sizeof(pkg->sender));
+                strcpy(pkg->sender, SERVER_SYSTEM_USERNAME);
+                memset(pkg->msg, '\0', sizeof(pkg->msg));
+                sprintf(pkg->msg, "Người dùng \"%s\" đã rời nhóm và không còn là thành viên của nhóm.", user[user_id].username);
+                pkg->ctrl_signal = GROUP_CHAT;
+                sv_group_chat(conn_socket, pkg);
             }
+            break;
         }
     }
 }

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkWindow" id="login_window">
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkFixed" id="login_fixed">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="width-request">200</property>
+            <property name="height-request">50</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Đăng Nhập</property>
+            <attributes>
+              <attribute name="font-desc" value="Sans Bold 10"/>
+              <attribute name="size" value="20480"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="x">120</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width-request">100</property>
+            <property name="height-request">40</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Tài Khoản:</property>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">60</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="width-request">100</property>
+            <property name="height-request">40</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Mật Khẩu:</property>
+          </object>
+          <packing>
+            <property name="x">5</property>
+            <property name="y">100</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="login_acc_entry">
+            <property name="width-request">310</property>
+            <property name="height-request">35</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="margin-end">20</property>
+          </object>
+          <packing>
+            <property name="x">110</property>
+            <property name="y">60</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkEntry" id="login_pwd_entry">
+            <property name="width-request">310</property>
+            <property name="height-request">35</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="margin-end">20</property>
+          </object>
+          <packing>
+            <property name="x">110</property>
+            <property name="y">100</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="login_btn">
+            <property name="label" translatable="yes">Đăng Nhập</property>
+            <property name="width-request">110</property>
+            <property name="height-request">40</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="margin-bottom">20</property>
+          </object>
+          <packing>
+            <property name="x">40</property>
+            <property name="y">160</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="signup_btn">
+            <property name="label" translatable="yes">Đăng Ký</property>
+            <property name="width-request">110</property>
+            <property name="height-request">40</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="margin-bottom">20</property>
+          </object>
+          <packing>
+            <property name="x">160</property>
+            <property name="y">160</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="login_exit_btn">
+            <property name="label" translatable="yes">Thoát</property>
+            <property name="width-request">110</property>
+            <property name="height-request">40</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="margin-bottom">20</property>
+          </object>
+          <packing>
+            <property name="x">280</property>
+            <property name="y">160</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
