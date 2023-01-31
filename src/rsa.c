@@ -209,6 +209,7 @@ long long *rsa_encrypt(const char *message, const unsigned long message_size,
 {
   // printf("%lld %lld\n", pub->exponent, pub->modulus);
   long long *encrypted = malloc(sizeof(long long) * message_size);
+  memset(encrypted, '\0', sizeof(*encrypted));
   if (encrypted == NULL)
   {
     fprintf(stderr,
@@ -243,7 +244,9 @@ char *rsa_decrypt(const long long *message,
   // We allocate space to do the decryption (temp) and space for the output as a char array
   // (decrypted)
   char *decrypted = malloc(message_size / sizeof(long long));
+  memset(decrypted, '\0', sizeof(*decrypted));
   char *temp = malloc(message_size);
+  memset(temp, '\0', sizeof(*temp));
   if ((decrypted == NULL) || (temp == NULL))
   {
     fprintf(stderr,
@@ -254,7 +257,7 @@ char *rsa_decrypt(const long long *message,
   long long i = 0;
   for (i = 0; i < message_size / 8; i++)
   {
-    if(message[i] <= 0) break;
+    if(message[i] == '\0') break;
     if ((temp[i] = rsa_modExp(message[i], priv->exponent, priv->modulus)) == -1)
     {
       free(temp);
@@ -267,7 +270,7 @@ char *rsa_decrypt(const long long *message,
   {
     if(temp[i] <= 0) break;
     decrypted[i] = temp[i];
-    // printf("%c %d\n", decrypted[i], decrypted[i]);
+    printf("%c %d\n", decrypted[i], decrypted[i]);
   } //printf("\n");
   decrypted[i] = '\0';
   free(temp);

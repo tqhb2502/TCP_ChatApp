@@ -381,8 +381,16 @@ void sv_private_chat(int conn_socket, Package *pkg)
     // if(pkg->ctrl_signal == PRIVATE_CHAT)
     pkg->ctrl_signal = PRIVATE_CHAT;
     printf("%d: %s to %s: %s\n", pkg->ctrl_signal, pkg->sender, pkg->receiver, pkg->msg);
+    
 
     int i = 0;
+
+    // while (pkg->encrypted_msg[i] != 0)
+    // {
+    //     printf("%lld\n", pkg->encrypted_msg[i]);
+    //     i++;
+    // }
+    
 
     for (i = 0; i < MAX_USER; i++)
     {

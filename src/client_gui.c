@@ -662,9 +662,16 @@ gboolean recv_private_chat(gpointer data) {
     // if user is in a group room, out of this group room
     curr_group_id = -1;
     join_succ = 0;
+
+    int i = 0;
+    while(pkg_pt->encrypted_msg[i] != 0) {
+        // printf("%lld\n", pkg_pt->encrypted_msg[i]);
+        i++;
+    }
     
     printf("Private Key:\n Modulus: %lld\n Exponent: %lld\n", (long long)my_priv->modulus, (long long)my_priv->exponent);
-    char* decrypted = rsa_decrypt((long long*)pkg_pt->encrypted_msg, sizeof(pkg_pt->encrypted_msg), my_priv);
+    // printf("%ld\n", sizeof(pkg_pt->encrypted_msg));
+    char* decrypted = rsa_decrypt((long long*)pkg_pt->encrypted_msg, i * 8, my_priv);
 
     const gchar *cur_chat_label_content = gtk_label_get_text(GTK_LABEL(cur_chat_label));
     if (strcmp(cur_chat_label_content, pkg_pt->sender) != 0) {

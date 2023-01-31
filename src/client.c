@@ -374,14 +374,21 @@ void private_chat(int client_socket, char *receiver, char *msg)
         strcpy(pkg.msg, msg);
     else {
         long long *encrypted = rsa_encrypt(msg, strlen(msg), user_pub->public_key);
-        memset(pkg.encrypted_msg, 0, sizeof(pkg.encrypted_msg));
+        memset(pkg.encrypted_msg, '\0', sizeof(pkg.encrypted_msg));
         int i = 0;
         printf("Encrypted!\n");
-        while((long long)encrypted[i] != 0) {
+        // printf("%s %ld\n", msg, strlen(msg));
+        for(i = 0; i < strlen(msg); i++) {
             pkg.encrypted_msg[i] = (long long)encrypted[i];
             printf("%lld ", (long long)pkg.encrypted_msg[i]);
-            i++;
-        }printf("\n");
+        }
+        printf("\n");
+        // i = 0;
+        // while (pkg.encrypted_msg[i] != 0) {
+        //     printf("%lld\n", pkg.encrypted_msg[i]);
+        //     i++;
+        // }
+        // printf("\n");
     }
     send(client_socket, &pkg, sizeof(pkg), 0);
 
