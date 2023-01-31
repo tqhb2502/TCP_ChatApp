@@ -9,6 +9,9 @@ Active_user user[MAX_USER];
 Group group[MAX_GROUP];
 Account *acc_list;
 
+Public_key_users pub[512];
+int pubkey_count = 0;
+
 int create_listen_socket()
 {
 
@@ -213,6 +216,13 @@ void sv_user_use(int conn_socket)
         case PRIVATE_CHAT:
             sv_private_chat(conn_socket, &pkg);
             break;
+        case SEND_PUBLIC_KEY:
+            save_public_key(pkg.sender, pkg.msg);
+            break;
+
+        case SEND_PUBLIC_KEY_REQ:
+            send_public_key(conn_socket, pkg.receiver);
+            break;
 
         case CHAT_ALL:
             sv_chat_all(conn_socket, &pkg);
@@ -303,9 +313,73 @@ void sv_active_user(int conn_socket, Package *pkg)
     send(conn_socket, pkg, sizeof(*pkg), 0);
 }
 
+
+int check_public_key(Public_key_users* user_pub, char* username) {
+    int check = 0;
+    // printf("has %d public key(s)\n", pubkey_count);
+    for(int i = 0; i < pubkey_count; i++) {
+        
+        if(strcmp(pub[i].username, username) == 0) {
+            user_pub->public_key->exponent = pub[i].public_key->exponent;
+            user_pub->public_key->modulus = pub[i].public_key->modulus;
+            strcpy(user_pub->username, username);
+            check = 1;
+            break;
+        }
+    }
+    return check;
+}
+
+void send_public_key(int client_socket, char* receiver) {
+    Package pkg;
+    strcpy(pkg.receiver, receiver);
+    Public_key_users user_key[1];
+    int check = check_public_key(user_key, receiver);
+    if(check == 0) {
+        printf("No public key of %s\n", receiver);
+        return;
+    }
+    // strcpy(pkg.sender, my_username);
+
+    pkg.ctrl_signal = SEND_PUBLIC_KEY;
+    memcpy(pkg.msg, &user_key->public_key->modulus, sizeof(user_key->public_key->modulus));
+    memcpy(pkg.msg + sizeof user_key->public_key->modulus, &user_key->public_key->exponent, sizeof(user_key->public_key->exponent));
+    printf("Public Key of %s:\n Modulus: %lld\n Exponent: %lld\n", receiver, (long long)user_key->public_key->modulus, (long long)user_key->public_key->exponent);
+
+    send(client_socket, &pkg, sizeof(pkg), 0);
+    printf("Public key sent!\n\n");
+}
+
+void save_public_key(char* sender, char* msg) {
+    int check = 0;
+    int i;
+    for(i = 0; i < pubkey_count; i++) {
+        if(strcmp(pub[i].username, sender) == 0) {
+            pub[i].public_key->exponent = ((struct public_key_class*)msg)->exponent;
+            pub[i].public_key->modulus = ((struct public_key_class*)msg)->modulus;
+            
+            check = 1;
+            break;
+        }
+    }
+    if(check != 1) {
+        i = pubkey_count;
+        // pub[i] = (Public_key_users)malloc(sizeof(Public_key_users));
+        pub[i].public_key->exponent = ((struct public_key_class*)msg)->exponent;
+        pub[i].public_key->modulus = ((struct public_key_class*)msg)->modulus;
+        strcpy(pub[i].username, sender);
+        pubkey_count++;
+    }
+    printf("Public Key of %s:\n Modulus: %lld\n Exponent: %lld\n\n", sender, (long long)pub[i].public_key->modulus, (long long)pub[i].public_key->exponent);
+
+}
+
 void sv_private_chat(int conn_socket, Package *pkg)
 {
 
+    send_public_key(conn_socket, pkg->receiver);
+    // if(pkg->ctrl_signal == PRIVATE_CHAT)
+    pkg->ctrl_signal = PRIVATE_CHAT;
     printf("%d: %s to %s: %s\n", pkg->ctrl_signal, pkg->sender, pkg->receiver, pkg->msg);
 
     int i = 0;
@@ -316,7 +390,7 @@ void sv_private_chat(int conn_socket, Package *pkg)
         {
             // recv_socket = user[i].socket;
             send(user[i].socket, pkg, sizeof(*pkg), 0);
-            printf("sent to receiver\n");
+            printf("Sent %d to %s\n", pkg->ctrl_signal, pkg->receiver);
             break;
         }
     }

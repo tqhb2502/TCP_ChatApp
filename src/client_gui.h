@@ -13,7 +13,6 @@
 #define GROUP_NAME_INDICATOR "Tên nhóm"
 #define GROUP_MEM_NUMBER_INDICATOR "Số lượng thành viên"
 #define GROUP_MEM_USERNAME_INDICATOR "Tên người dùng của thành viên"
-#define TESTING_MSG "#sys_testing#"
 #define DEFAULT_CUR_CHAT_LABEL "#none#"
 
 #define INCORRECT_ACC_NOTIF "Đăng nhập thất bại!\nTài khoản hoặc mật khẩu không chính xác."

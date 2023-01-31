@@ -9,6 +9,13 @@ char curr_group_name[GROUP_NAME_SIZE];
 int curr_group_id = -1;
 int join_succ = 0;
 
+char *PRIME_SOURCE_FILE = "../assets/primes.txt";
+
+struct public_key_class my_pub[1];
+struct private_key_class my_priv[1];
+
+Public_key_users user_pub[1];
+
 int connect_to_server()
 {
 
@@ -140,9 +147,45 @@ int login(int client_socket, char *username, char *password)
 
     recv(client_socket, &pkg, sizeof(pkg), 0);
     // sleep(1);
-    if (pkg.ctrl_signal == LOGIN_SUCC)
+    if (pkg.ctrl_signal == LOGIN_SUCC){
         strcpy(my_username, username);
+        rsa_gen_keys(my_pub, my_priv, PRIME_SOURCE_FILE);
+        
+        printf("Private Key:\n Modulus: %lld\n Exponent: %lld\n", (long long)my_priv->modulus, (long long)my_priv->exponent);
+        printf("Public Key:\n Modulus: %lld\n Exponent: %lld\n\n", (long long)my_pub->modulus, (long long)my_pub->exponent);
+        // pubkey_count = 0;
+        send_my_public_key(client_socket);
+    }
     return pkg.ctrl_signal;
+}
+
+void send_my_public_key(int client_socket) {
+    Package pkg;
+    pkg.ctrl_signal = SEND_PUBLIC_KEY;
+    strcpy(pkg.sender, my_username);
+    memcpy(pkg.msg, &my_pub->modulus, sizeof(my_pub->modulus));
+    memcpy(pkg.msg + sizeof my_pub->modulus, &my_pub->exponent, sizeof(my_pub->exponent));
+    send(client_socket, &pkg, sizeof(pkg), 0);
+}
+
+void receive_public_key(int client_socket, Package* pkg) {
+    strcpy(user_pub->username, pkg->receiver);
+    user_pub->public_key->exponent = ((struct public_key_class*)pkg->msg)->exponent;
+    user_pub->public_key->modulus = ((struct public_key_class*)pkg->msg)->modulus;
+    // printf("%s %lld %lld\n", user_pub->username, (long long)user_pub->public_key->exponent, (long long)user_pub->public_key->modulus);
+}
+
+int check_public_key(int client_socket, char* username) {
+    // printf("Key of %s, require %s\n", user_pub->username, username);
+    if(strcmp(user_pub->username, username) == 0) return 1;
+    else {
+        Package pkg;
+        strcpy(pkg.sender, my_username);
+        strcpy(pkg.receiver, username);
+        pkg.ctrl_signal = SEND_PUBLIC_KEY_REQ;
+        send(client_socket, &pkg, sizeof(pkg), 0);
+        return 0;
+    }
 }
 
 // void user_use(int client_socket)
@@ -312,30 +355,35 @@ void see_active_user(int client_socket)
 void private_chat(int client_socket, char *receiver, char *msg)
 {
     Package pkg;
-    // char username[USERNAME_SIZE];
-    // char msg[MSG_SIZE];
-    pkg.ctrl_signal = PRIVATE_CHAT;
-    // send(client_socket, &pkg, sizeof(pkg), 0);
-
-    // printf("Receiver: \n");
-    // fgets(username, USERNAME_SIZE, stdin);
-    // username[strlen(username) - 1] = '\0';
+    
     strcpy(pkg.receiver, receiver);
     strcpy(pkg.sender, my_username);
-    // send(client_socket, &pkg, sizeof(pkg), 0);
+    // strcpy(user_pub->username,NULL_STRING);
+    int check = check_public_key(client_socket, receiver);
+    if(check == 0) {
+        user_pub->public_key->exponent = 0;
+        while(user_pub->public_key->exponent == 0);
+    }
+    
 
-    // while (1)
-    // {
-    //     printf("Message(leave blank to exit private chat): \n");
-    //     fgets(msg, MSG_SIZE, stdin);
-    //     msg[strlen(msg) - 1] = '\0';
-    //     if (strlen(msg) == 0)
-    //     {
-    //         break;
-    //     }
+    printf("Start chatting with %s\n", receiver);
+    
+    pkg.ctrl_signal = PRIVATE_CHAT;
 
+    if(strcmp(msg, TESTING_MSG) == 0)
         strcpy(pkg.msg, msg);
-        send(client_socket, &pkg, sizeof(pkg), 0);
+    else {
+        long long *encrypted = rsa_encrypt(msg, strlen(msg), user_pub->public_key);
+        memset(pkg.encrypted_msg, 0, sizeof(pkg.encrypted_msg));
+        int i = 0;
+        printf("Encrypted!\n");
+        while((long long)encrypted[i] != 0) {
+            pkg.encrypted_msg[i] = (long long)encrypted[i];
+            printf("%lld ", (long long)pkg.encrypted_msg[i]);
+            i++;
+        }printf("\n");
+    }
+    send(client_socket, &pkg, sizeof(pkg), 0);
 
         // sleep(1);
     // }
@@ -398,6 +446,15 @@ void chat_all(int client_socket)
 //         }
 //     }
 // }
+
+
+char* group_msg_encrypt(char* msg, char* key) {
+
+}
+
+char* group_msg_decrypt(char* msg, char* key) {
+
+}
 
 // hien thi nhom hien tai
 void show_group(int client_socket)

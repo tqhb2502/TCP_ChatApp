@@ -27,8 +27,10 @@ void on_login_btn_clicked(GtkButton *btn, gpointer data) {
 
     // checking result
     if (result == LOGIN_SUCC) {
+
         gtk_widget_destroy(GTK_WIDGET(login_window));
         show_main_window((int *) data);
+        
     } else if (result == INCORRECT_ACC) {
         notif_dialog(GTK_WINDOW(login_window), INCORRECT_ACC_NOTIF);
     } else {
@@ -429,7 +431,13 @@ gpointer recv_handler(gpointer data) {
             case PRIVATE_CHAT:
                 gdk_threads_add_idle(recv_private_chat, &pkg);
                 break;
-
+            
+            case SEND_PUBLIC_KEY:
+                // printf("Receive public key!\n");
+                receive_public_key(client_socket, &pkg);
+                is_done = 1;
+                break;
+                       
             // case CHAT_ALL:
             //     printf("%s to all: %s\n", pkg.sender, pkg.msg);
             //     break;
@@ -654,6 +662,9 @@ gboolean recv_private_chat(gpointer data) {
     // if user is in a group room, out of this group room
     curr_group_id = -1;
     join_succ = 0;
+    
+    printf("Private Key:\n Modulus: %lld\n Exponent: %lld\n", (long long)my_priv->modulus, (long long)my_priv->exponent);
+    char* decrypted = rsa_decrypt((long long*)pkg_pt->encrypted_msg, sizeof(pkg_pt->encrypted_msg), my_priv);
 
     const gchar *cur_chat_label_content = gtk_label_get_text(GTK_LABEL(cur_chat_label));
     if (strcmp(cur_chat_label_content, pkg_pt->sender) != 0) {
@@ -665,7 +676,7 @@ gboolean recv_private_chat(gpointer data) {
 
         insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), pkg_pt->sender);
         insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), SPLITER);
-        insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), pkg_pt->msg);
+        insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), decrypted);
         insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEWLINE);
 
         scroll_window_to_bottom(GTK_SCROLLED_WINDOW(recv_msg_sw));

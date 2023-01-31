@@ -26,7 +26,6 @@
 #define END_CHAT 302
 
 #define SHOW_USER 401
-#define PRIVATE_CHAT 402
 #define CHAT_ALL 403
 #define LOG_OUT 404
 
@@ -50,9 +49,18 @@
 #define LEAVE_GROUP 422
 #define LEAVE_GROUP_SUCC 423
 
+
+#define PRIVATE_CHAT 501
+#define SEND_PUBLIC_KEY 502
+#define SEND_PUBLIC_KEY_REQ 503
+#define RECV_PUB_KEY_SUCCESS 504
+#define NO_PUBLIC_KEY -504
+
+
 //* Cấu trúc gói tin
 typedef struct Package_ {
     char msg[MSG_SIZE]; /* nội dung thông điệp */
+    long long encrypted_msg[MSG_SIZE]; /* noi dung thong diep duoc ma hoa khi chat rieng */
     char sender[USERNAME_SIZE]; /* username người gửi */
     char receiver[USERNAME_SIZE]; /* username người nhận */
     int group_id; /*id group muốn gửi*/
