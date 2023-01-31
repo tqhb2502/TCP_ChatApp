@@ -6,6 +6,24 @@
 #include "error.h"
 #include "util.h"
 
+#include "rsa.h"
+
+#define TESTING_MSG "#sys_testing#"
+
+extern struct public_key_class my_pub[1];
+extern struct private_key_class my_priv[1];
+
+extern Public_key_users pub[512];
+extern int pubkey_count;
+
+void send_my_public_key(int client_socket);
+void receive_public_key(int client_socket, Package* pkg);
+int check_public_key(int client_socket, char* username);
+
+char* group_msg_encrypt(char* msg, char* key);
+char* group_msg_decrypt(char* msg, char* key);
+
+
 extern char my_username[USERNAME_SIZE];
 extern char curr_group_name[GROUP_NAME_SIZE];
 extern int curr_group_id;
