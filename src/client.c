@@ -72,7 +72,8 @@ void sub_group_chat_menu(char *group_name)
     printf("2. Chat \n");
     printf("3. Show group infomation \n");
     printf("4. Leave the group chat\n");
-    printf("5. Return group chat menu\n");
+    printf("5. View chat history\n");
+    printf("6. Return group chat menu\n");
 }
 void ask_server(int client_socket)
 {
@@ -470,6 +471,9 @@ void handel_group_mess(int client_socket)
             leave_group(client_socket);
             login_group = 0;
             break;
+        case 5:
+            view_chat_history();
+            break;
         default:
             login_group = 0;
             break;
@@ -518,12 +522,20 @@ void group_chat(int client_socket)
         }
 
         strcpy(pkg.msg, msg);
+        save_chat(&pkg);
         send(client_socket, &pkg, sizeof(pkg), 0);
 
         sleep(1);
     }
 }
-
+// xem lich su
+void view_chat_history()
+{
+    Package pkg;
+    pkg.group_id = curr_group_id;
+    strcpy(pkg.sender, my_username);   
+    see_chat(&pkg);
+}
 // hien thi thong tin phong
 void show_group_info(int client_socket)
 {

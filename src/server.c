@@ -580,7 +580,7 @@ void sv_invite_friend(int conn_socket, Package *pkg)
 void sv_group_chat(int conn_socket, Package *pkg)
 {
     int group_id = pkg->group_id;
-
+    
     int i = 0;
     for (i = 0; i < MAX_USER; i++)
     {
@@ -589,6 +589,7 @@ void sv_group_chat(int conn_socket, Package *pkg)
             send(group[group_id].group_member[i].socket, pkg, sizeof(*pkg), 0);
         }
     }
+    
     pkg->ctrl_signal = MSG_SENT_SUCC;
     send(conn_socket, pkg, sizeof(*pkg), 0);
 }
@@ -636,7 +637,12 @@ void sv_leave_group(int conn_socket, Package *pkg)
         if (strcmp(mem.username, user[user_id].username) == 0)
         {
             group[group_id].group_member[i].socket = -1;
+            strcpy(group[group_id].group_member[i].username,"NULL_STRING");
             group[group_id].curr_num--;
+            if(group[group_id].curr_num == 0)
+            {
+                drop_table(group_id);
+            }
             if (sv_leave_group_user(&user[user_id], group_id))
             {
                 // gui thong bao den cho moi nguoi

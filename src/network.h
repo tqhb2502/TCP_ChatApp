@@ -2,15 +2,18 @@
 #define __NETWORK_H__
 
 #include "account_manager.h"
-
+#include <time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <sqlite3.h>
+#include <string.h>
+
 
 #define MSG_SIZE 2048
-
+#define MAX_SQL_SIZE 3072
 //* Tín hiệu điều khiển
 // chung
 // server
@@ -56,4 +59,8 @@ typedef struct Package_ {
     int ctrl_signal; /* mã lệnh */
 } Package;
 
+sqlite3 *Create_room_sqlite(Package *pkg);
+void save_chat(Package *pkg);
+void see_chat(Package *pkg);
+void drop_table(int group_id);
 #endif
