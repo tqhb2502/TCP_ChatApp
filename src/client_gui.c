@@ -140,6 +140,7 @@ void on_send_btn_clicked(GtkButton *btn, gpointer data) {
         insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), (gchar *) message);
         insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEWLINE);
 
+        while (gtk_events_pending()) gtk_main_iteration();
         scroll_window_to_bottom(GTK_SCROLLED_WINDOW(recv_msg_sw));
     }
 
@@ -225,8 +226,10 @@ void see_chat(Package *pkg)
 void scroll_window_to_bottom(GtkScrolledWindow *sw) {
 
     GtkAdjustment *vadj = gtk_scrolled_window_get_vadjustment(sw);
+    // double value = gtk_adjustment_get_value (vadj);
     double upper = gtk_adjustment_get_upper(vadj);
     double page_size = gtk_adjustment_get_page_size(vadj);
+    // printf("%.2lf %.2lf\n", upper, page_size);
     gtk_adjustment_set_value(vadj, upper - page_size);
 }
 
@@ -599,6 +602,7 @@ gboolean recv_show_user(gpointer data) {
     }
 
     // scroll to bottom
+    while (gtk_events_pending()) gtk_main_iteration();
     scroll_window_to_bottom(GTK_SCROLLED_WINDOW(online_sw));
 
     // task is done
@@ -639,6 +643,7 @@ gboolean recv_show_group(gpointer data) {
     }
 
     // scroll to bottom
+    while (gtk_events_pending()) gtk_main_iteration();
     scroll_window_to_bottom(GTK_SCROLLED_WINDOW(group_sw));
 
     // task is done
@@ -727,6 +732,7 @@ gboolean recv_private_chat(gpointer data) {
         insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), decrypted);
         insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEWLINE);
 
+        while (gtk_events_pending()) gtk_main_iteration();
         scroll_window_to_bottom(GTK_SCROLLED_WINDOW(recv_msg_sw));
     }
 
@@ -772,13 +778,13 @@ gboolean recv_join_group_succ(gpointer data) {
 
     for (int i = 3; i < (nrow + 1) * ncolumn; i++)
     {
-        if (i % 3 == 0)
-        {
-            printf("\n");
-            printf("%-25s", resultp[i]);
-        }
-        else
-            printf("%15s", resultp[i]);
+        // if (i % 3 == 0)
+        // {
+        //     printf("\n");
+        //     printf("%-25s", resultp[i]);
+        // }
+        // else
+        //     printf("%15s", resultp[i]);
         if (i % 3 == 1) {
             insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), resultp[i]);
             insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), SPLITER);
@@ -792,10 +798,11 @@ gboolean recv_join_group_succ(gpointer data) {
     insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEW_MESSAGES_NOTIF);
     insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEWLINE);
 
+    while (gtk_events_pending()) gtk_main_iteration();
+    scroll_window_to_bottom(GTK_SCROLLED_WINDOW(recv_msg_sw));
+
     sqlite3_free_table(resultp);
     sqlite3_close(database);
-
-    scroll_window_to_bottom(GTK_SCROLLED_WINDOW(recv_msg_sw));
 
     // focus on send_netry
     gtk_widget_grab_focus(send_entry);
@@ -948,7 +955,8 @@ gboolean recv_group_chat(gpointer data) {
     insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), SPLITER);
     insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), pkg_pt->msg);
     insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEWLINE);
-
+    
+    while (gtk_events_pending()) gtk_main_iteration();
     scroll_window_to_bottom(GTK_SCROLLED_WINDOW(recv_msg_sw));
 
     g_mutex_unlock(&ui_mutex);
