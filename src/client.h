@@ -3,6 +3,7 @@
 
 #include "server.h"
 #include "network.h"
+#include "db.h"
 #include "error.h"
 #include "util.h"
 

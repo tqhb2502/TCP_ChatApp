@@ -4,6 +4,7 @@
 #include <time.h>
 #include "network.h"
 #include "server.h"
+#include "db.h"
 #include <sqlite3.h>
 
 #define MAX_SQL_SIZE 3072
