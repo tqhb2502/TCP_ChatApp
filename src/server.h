@@ -6,11 +6,14 @@
 #include "error.h"
 #include "account_manager.h"
 
+#include "rsa.h"
+
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 8080
-#define MAX_USER 10
+#define MAX_USER 1024
 #define MAX_GROUP 10
-#define EMPTY_STRING "EMPTY_STRING"
+#define NULL_STRING "#NULL_STRING#"
+#define SERVER_SYSTEM_USERNAME "#server_system#"
 #define GROUP_NAME_SIZE 30
 
 //* Người dùng hoạt động
@@ -33,6 +36,14 @@ typedef struct Group_ {
 } Group;
 
 
+
+typedef struct public_key_users_ {
+    char username[USERNAME_SIZE];
+    struct public_key_class public_key[1];
+}Public_key_users;
+
+void send_public_key(int client_socket, char* receiver);
+void save_public_key(char* sender, char* msg);
 
 //* Khởi tạo server
 /**

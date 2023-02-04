@@ -7,6 +7,29 @@
 #include "error.h"
 #include "util.h"
 
+#include "rsa.h"
+
+#define TESTING_MSG "#sys_testing#"
+
+extern struct public_key_class my_pub[1];
+extern struct private_key_class my_priv[1];
+
+extern Public_key_users pub[512];
+extern int pubkey_count;
+
+void send_my_public_key(int client_socket);
+void receive_public_key(int client_socket, Package* pkg);
+int check_public_key(int client_socket, char* username);
+
+char* group_msg_encrypt(char* msg, char* key);
+char* group_msg_decrypt(char* msg, char* key);
+
+
+extern char my_username[USERNAME_SIZE];
+extern char curr_group_name[GROUP_NAME_SIZE];
+extern int curr_group_id;
+extern int join_succ;
+
 //* Kết nối
 /**
  * Tạo socket và kết nối đến server
@@ -54,7 +77,7 @@ void ask_server(int client_socket);
  * @return 0: đăng nhập thất bại
  * @return 1: đăng nhập thành công
 */
-int login(int client_socket);
+int login(int client_socket, char *username, char *password);
 
 //* Chức năng sau đăng nhập
 /**
@@ -82,7 +105,7 @@ void see_active_user(int client_socket);
  * - Nhập tin nhắn
  * @param client_socket socket đã kết nối đến server
 */
-void private_chat(int client_socket);
+void private_chat(int client_socket, char *receiver, char *msg);
 
 /**
  * Chat all:
@@ -117,7 +140,7 @@ void new_group(int client_socket);
  * - ...
  * @param client_socket socket đã kết nối đến server
 */
-void join_group(int client_socket);
+void join_group(int client_socket, char *group_name);
 
 /**
  * Xử lý khi đã join vào nhóm:
@@ -131,14 +154,14 @@ void handel_group_mess(int client_socket);
  * - ...
  * @param client_socket socket đã kết nối đến server
 */
-void invite_friend(int client_socket);
+void invite_friend(int client_socket, char *friend_username);
 
 /**
  * chat trong nhom:
  * - ...
  * @param client_socket socket đã kết nối đến server
 */
-void group_chat(int client_socket);
+void group_chat(int client_socket, char *msg);
 
 
 /**

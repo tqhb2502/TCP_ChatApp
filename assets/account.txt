@@ -1,7 +1,10 @@
 hust hust123 0
 soict soict123 0
-huytq 123 1
-hedspi 123 1
-test test 1
+huytq 1 1
+hedspi 1 1
+test 1 1
 tuanchibi 1 1
 tuan 1 1
+thai 1 1
+huy 1 1
+minh 1 1

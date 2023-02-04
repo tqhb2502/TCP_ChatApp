@@ -29,7 +29,6 @@
 #define END_CHAT 302
 
 #define SHOW_USER 401
-#define PRIVATE_CHAT 402
 #define CHAT_ALL 403
 #define LOG_OUT 404
 
@@ -45,14 +44,26 @@
 #define INVITE_FRIEND_SUCC 414
 #define GROUP_CHAT 415
 #define GROUP_INFO 416
-#define SHOW_GROUP_NAME 417
-#define SHOW_GROUP_MEM 418
-#define LEAVE_GROUP 419
-#define LEAVE_GROUP_SUCC 420
+#define SHOW_GROUP_INFO_START 417
+#define SHOW_GROUP_NAME 418
+#define SHOW_GROUP_MEM_NUMBER 419
+#define SHOW_GROUP_MEM_USERNAME 420
+#define SHOW_GROUP_INFO_END 421
+#define LEAVE_GROUP 422
+#define LEAVE_GROUP_SUCC 423
+
+
+#define PRIVATE_CHAT 501
+#define SEND_PUBLIC_KEY 502
+#define SEND_PUBLIC_KEY_REQ 503
+#define RECV_PUB_KEY_SUCCESS 504
+#define NO_PUBLIC_KEY -504
+
 
 //* Cấu trúc gói tin
 typedef struct Package_ {
     char msg[MSG_SIZE]; /* nội dung thông điệp */
+    long long encrypted_msg[MSG_SIZE]; /* noi dung thong diep duoc ma hoa khi chat rieng */
     char sender[USERNAME_SIZE]; /* username người gửi */
     char receiver[USERNAME_SIZE]; /* username người nhận */
     int group_id; /*id group muốn gửi*/
