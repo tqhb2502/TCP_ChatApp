@@ -3,4 +3,4 @@ src/client_gui
 src/client
 src/server
 *.glade~
-.db
+*.db
