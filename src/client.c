@@ -80,7 +80,8 @@ void sub_group_chat_menu(char *group_name)
     printf("2. Chat \n");
     printf("3. Show group infomation \n");
     printf("4. Leave the group chat\n");
-    printf("5. Return group chat menu\n");
+    printf("5. View chat history\n");
+    printf("6. Return group chat menu\n");
 }
 // void ask_server(int client_socket)
 // {
@@ -544,6 +545,7 @@ void join_group(int client_socket, char *group_name)
 //     curr_group_id = -1;
 //     return;
 // }
+
 // moi ban
 void invite_friend(int client_socket, char *friend_username)
 {
@@ -584,12 +586,20 @@ void group_chat(int client_socket, char *msg)
         // }
 
         strcpy(pkg.msg, msg);
+        save_chat(&pkg);
         send(client_socket, &pkg, sizeof(pkg), 0);
 
     //     sleep(1);
     // }
 }
-
+// xem lich su
+void view_chat_history()
+{
+    Package pkg;
+    pkg.group_id = curr_group_id;
+    strcpy(pkg.sender, my_username);   
+    see_chat(&pkg);
+}
 // hien thi thong tin phong
 void show_group_info(int client_socket)
 {

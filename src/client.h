@@ -3,6 +3,7 @@
 
 #include "server.h"
 #include "network.h"
+#include "db.h"
 #include "error.h"
 #include "util.h"
 
@@ -177,6 +178,12 @@ void show_group_info(int client_socket);
 */
 void leave_group(int client_socket);
 
+/**
+ * Xem lich su
+ * - ...
+ * @param client_socket socket đã kết nối đến server
+*/
+void view_chat_history();
 
 /**
  * Đăng xuất khỏi tài khoản

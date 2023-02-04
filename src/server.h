@@ -2,6 +2,7 @@
 #define __SERVER_H__
 
 #include "network.h"
+#include "db.h"
 #include "error.h"
 #include "account_manager.h"
 
