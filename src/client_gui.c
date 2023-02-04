@@ -1,5 +1,6 @@
 #include "client.h"
 #include "client_gui.h"
+#include "db.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +9,10 @@
 Package pkg;
 GMutex ui_mutex;
 int is_done;
+
+sqlite3 *database;
+char **resultp;
+int nrow, ncolumn;
 
 //* ----------------------- SIGNAL HANDLERS -----------------------
 //* login window
@@ -181,6 +186,42 @@ void on_invite_to_group_confirm_btn_clicked(GtkButton *btn, gpointer data) {
 }
 
 //* ----------------------- UTILITY FUNCTIONS -----------------------
+void view_chat_history()
+{
+    Package pkg;
+    pkg.group_id = curr_group_id;
+    strcpy(pkg.sender, my_username);
+    see_chat(&pkg);
+}
+
+void see_chat(Package *pkg)
+{
+    database = Create_room_sqlite(pkg);
+    int ret;
+    char *errmsg = NULL;
+    char buf[MAX_SQL_SIZE] = "create table if not exists chat(time TEXT, sender TEXT, message TEXT)";
+    ret = sqlite3_exec(database, buf, NULL, NULL, &errmsg);
+    if (ret != SQLITE_OK)
+    {
+        printf("Open table failed\n");
+        return;
+    }
+
+    // xem lich su
+    resultp = NULL;
+    char *sq1 = "select * from chat";
+    ret = sqlite3_get_table(database, sq1, &resultp, &nrow, &ncolumn, &errmsg);
+    if (ret != SQLITE_OK)
+    {
+        printf("Database operation failed\n");
+        printf("sqlite3_get_table: %s\n", errmsg);
+    }
+
+    // sqlite3_free_table(resultp);
+
+    // sqlite3_close(database);
+}
+
 void scroll_window_to_bottom(GtkScrolledWindow *sw) {
 
     GtkAdjustment *vadj = gtk_scrolled_window_get_vadjustment(sw);
@@ -720,8 +761,43 @@ gboolean recv_join_group_succ(gpointer data) {
 
     g_mutex_lock(&ui_mutex);
 
+    // label
     gtk_label_set_text(GTK_LABEL(cur_chat_label), (const gchar *) group_name);
+
+    // delete old recv_msg_tv content
     delete_textview_content(GTK_TEXT_VIEW(recv_msg_tv));
+
+    // print chat history
+    view_chat_history();
+
+    for (int i = 3; i < (nrow + 1) * ncolumn; i++)
+    {
+        if (i % 3 == 0)
+        {
+            printf("\n");
+            printf("%-25s", resultp[i]);
+        }
+        else
+            printf("%15s", resultp[i]);
+        if (i % 3 == 1) {
+            insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), resultp[i]);
+            insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), SPLITER);
+        }
+        if (i % 3 == 2) {
+            insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), resultp[i]);
+            insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEWLINE);
+        }
+    }
+
+    insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEW_MESSAGES_NOTIF);
+    insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEWLINE);
+
+    sqlite3_free_table(resultp);
+    sqlite3_close(database);
+
+    scroll_window_to_bottom(GTK_SCROLLED_WINDOW(recv_msg_sw));
+
+    // focus on send_netry
     gtk_widget_grab_focus(send_entry);
 
     g_mutex_unlock(&ui_mutex);
@@ -831,6 +907,41 @@ gboolean recv_group_chat(gpointer data) {
         gtk_label_set_text(GTK_LABEL(cur_chat_label), group_name);
 
         delete_textview_content(GTK_TEXT_VIEW(recv_msg_tv));
+
+        // print chat history
+        view_chat_history();
+
+        int cell_num;
+        if (strcmp(pkg_pt->sender, SERVER_SYSTEM_USERNAME) == 0) {
+            cell_num = (nrow + 1) * ncolumn;
+        } else {
+            cell_num = (nrow + 1) * ncolumn - 3;
+        }
+
+        for (int i = 3; i < cell_num; i++)
+        {
+            // if (i % 3 == 0)
+            // {
+            //     printf("\n");
+            //     printf("%-25s", resultp[i]);
+            // }
+            // else
+            //     printf("%15s", resultp[i]);
+            if (i % 3 == 1) {
+                insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), resultp[i]);
+                insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), SPLITER);
+            }
+            if (i % 3 == 2) {
+                insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), resultp[i]);
+                insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEWLINE);
+            }
+        }
+
+        insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEW_MESSAGES_NOTIF);
+        insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), NEWLINE);
+
+        sqlite3_free_table(resultp);
+        sqlite3_close(database);
     }
 
     insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), pkg_pt->sender);

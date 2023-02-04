@@ -592,14 +592,7 @@ void group_chat(int client_socket, char *msg)
     //     sleep(1);
     // }
 }
-// xem lich su
-void view_chat_history()
-{
-    Package pkg;
-    pkg.group_id = curr_group_id;
-    strcpy(pkg.sender, my_username);   
-    see_chat(&pkg);
-}
+
 // hien thi thong tin phong
 void show_group_info(int client_socket)
 {

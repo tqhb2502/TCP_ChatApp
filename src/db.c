@@ -2,10 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "network.h"
-#include "server.h"
+
 #include "db.h"
-#include <sqlite3.h>
 
 #define MAX_SQL_SIZE 3072
 
@@ -52,50 +50,6 @@ void save_chat(Package *pkg)
     sqlite3_close(database);
 }
 
-void see_chat(Package *pkg)
-{
-    sqlite3 *database = Create_room_sqlite(pkg);
-    int ret;
-    char *errmsg = NULL;
-    char buf[MAX_SQL_SIZE] = "create table if not exists chat(time TEXT, sender TEXT, message TEXT)";
-    ret = sqlite3_exec(database, buf, NULL, NULL, &errmsg);
-    if (ret != SQLITE_OK)
-    {
-        printf("Open table failed\n");
-        return;
-    }
-
-    // xem lich su
-    char **resultp = NULL;
-    int nrow, ncolumn;
-    char *sq1 = "select * from chat";
-    ret = sqlite3_get_table(database, sq1, &resultp, &nrow, &ncolumn, &errmsg);
-    if (ret != SQLITE_OK)
-    {
-        printf("Database operation failed\n");
-        printf("sqlite3_get_table: %s\n", errmsg);
-        return;
-    }
-    int i;
-    for (i = 3; i < (nrow + 1) * ncolumn; i++)
-    {
-        if (i % 3 == 0)
-        {
-            printf("\n");
-            printf("%-25s", resultp[i]);
-        }
-        else
-            printf("%15s", resultp[i]);
-    }
-    printf("\n");
-
-    sqlite3_free_table(resultp);
-
-    sqlite3_close(database);
-
-    sleep(1);
-}
-
 void drop_table(int group_id)
 {
     sqlite3 *database;
@@ -124,18 +78,16 @@ void drop_table(int group_id)
     printf("Chat table dropped successfully\n");
     sqlite3_close(database);
 }
+
 // int main(int argc, char *argv[])
 // {
 //     sqlite3 *db;
 //     Package pkg1;
 //     strcpy(pkg1.sender, "tuanchibi");
 //     strcpy(pkg1.msg, "hello");
-//     pkg1.group_id = 1;
+//     pkg1.group_id = 0;
 //     char *zErrMsg = 0;
 
-//     save_chat(&pkg1);
-//     see_chat(&pkg1);
-//     drop_table(pkg1.group_id);
 //     see_chat(&pkg1);
 //     return 0;
 // }

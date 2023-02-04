@@ -558,6 +558,7 @@ void sv_new_group(int conn_socket, Package *pkg)
             break;
         }
     }
+    drop_table(group_id);
     strcpy(pkg->msg, group[group_id].group_name);
     pkg->ctrl_signal = MSG_MAKE_GROUP_SUCC;
     send(conn_socket, pkg, sizeof(*pkg), 0);
@@ -741,10 +742,10 @@ void sv_leave_group(int conn_socket, Package *pkg)
             strcpy(group[group_id].group_member[i].username, NULL_STRING);
 
             group[group_id].curr_num--;
-            if(group[group_id].curr_num == 0)
-            {
-                drop_table(group_id);
-            }
+            // if(group[group_id].curr_num == 0)
+            // {
+            //     drop_table(group_id);
+            // }
             if (sv_leave_group_user(&user[user_id], group_id))
             {
                 // gui lai cho user

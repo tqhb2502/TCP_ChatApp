@@ -28,6 +28,7 @@
 #define INVITE_FRIEND_SUCC_NOTIF "Thành công!\nNgười dùng \"%s\" từ giờ sẽ là thành viên của nhóm \"%s\"."
 #define INVITE_FRIEND_NOTIF "Chú ý!\nNgười dùng \"%s\" đã thêm bạn vào nhóm \"%s\"."
 #define LEAVE_GROUP_SUCC_NOTIF "Rời nhóm thành công!"
+#define NEW_MESSAGES_NOTIF "------------Tin nhắn mới------------"
 
 //* builder for loading views
 GtkBuilder *builder;
@@ -116,6 +117,9 @@ void on_join_group_join_btn_clicked(GtkButton *btn, gpointer data);
 void on_invite_to_group_confirm_btn_clicked(GtkButton *btn, gpointer data);
 
 //* utility functions
+void view_chat_history();
+void see_chat(Package *pkg);
+
 void scroll_window_to_bottom(GtkScrolledWindow *sw);
 
 void insert_to_textview(GtkTextView *tv, gchar *text);
