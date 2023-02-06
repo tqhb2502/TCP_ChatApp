@@ -1,4 +1,5 @@
 .vscode
+.VSCodeCounter
 src/client_gui
 src/client
 src/server
