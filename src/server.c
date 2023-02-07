@@ -210,7 +210,7 @@ void sv_user_use(int conn_socket)
     while (login)
     {
         if (recv(conn_socket, &pkg, sizeof(pkg), 0) > 0) // printf("Receive from %d\n", conn_socket);
-            printf("%d chooses %d \n", conn_socket, pkg.ctrl_signal);
+            printf("\n--------------\n%d chooses %d \n", conn_socket, pkg.ctrl_signal);
         switch (pkg.ctrl_signal)
         {
         case PRIVATE_CHAT:
@@ -269,7 +269,8 @@ void sv_user_use(int conn_socket)
         printf("Done %d of %d\n", pkg.ctrl_signal, conn_socket);
     }
 
-    for (int i = 0; i < MAX_USER; i++)
+    int i = 0;
+    for (i = 0; i < MAX_USER; i++)
     {
         if (user[i].socket == conn_socket)
         {
@@ -293,6 +294,14 @@ void sv_user_use(int conn_socket)
             }
             break;
         }
+    }
+    for(int j = 0; j < pubkey_count; j++) {
+        if(strcmp(user[i].username, pub[j].username) == 0) {
+            pub[j].public_key->exponent = 0;
+            pub[j].public_key->modulus = 0;
+            break;
+        }
+
     }
 }
 
@@ -320,6 +329,7 @@ int check_public_key(Public_key_users* user_pub, char* username) {
     for(int i = 0; i < pubkey_count; i++) {
         
         if(strcmp(pub[i].username, username) == 0) {
+            if(pub[i].public_key->exponent == 0) return 0;
             user_pub->public_key->exponent = pub[i].public_key->exponent;
             user_pub->public_key->modulus = pub[i].public_key->modulus;
             strcpy(user_pub->username, username);
@@ -337,6 +347,8 @@ void send_public_key(int client_socket, char* receiver) {
     int check = check_public_key(user_key, receiver);
     if(check == 0) {
         printf("No public key of %s\n", receiver);
+        pkg.ctrl_signal = ERR_INVALID_RECEIVER;
+        send(client_socket, &pkg, sizeof(pkg), 0);
         return;
     }
     // strcpy(pkg.sender, my_username);
@@ -376,39 +388,43 @@ void save_public_key(char* sender, char* msg) {
 
 void sv_private_chat(int conn_socket, Package *pkg)
 {
+    int i = 0;
+    int recv_socket;
+    for (i = 0; i < MAX_USER; i++)
+    {
+        if (user[i].socket > 0)
+            if(strcmp(pkg->receiver, user[i].username) == 0)
+            {
+                recv_socket = user[i].socket;
+                break;
+            }
+    }
 
-    send_public_key(conn_socket, pkg->receiver);
+    if (i == MAX_USER){
+        pkg->ctrl_signal = ERR_INVALID_RECEIVER;
+        send(conn_socket, pkg, sizeof(*pkg), 0);
+        printf("sent err\n");
+        return;
+    }
+    
+    pkg->ctrl_signal = MSG_SENT_SUCC;
+
+    send(conn_socket, pkg, sizeof(*pkg), 0);
+    printf("sent nor\n");
+
+    if(strcmp(pkg->msg, TESTING_MSG) == 0) {
+        send_public_key(recv_socket, pkg->sender);
+        send_public_key(conn_socket, pkg->receiver);
+        return;
+    }
     // if(pkg->ctrl_signal == PRIVATE_CHAT)
     pkg->ctrl_signal = PRIVATE_CHAT;
     printf("%d: %s to %s: %s\n", pkg->ctrl_signal, pkg->sender, pkg->receiver, pkg->msg);
+
+
+    send(recv_socket, pkg, sizeof(*pkg), 0);
+    printf("Sent %d to %s\n", pkg->ctrl_signal, pkg->receiver);
     
-
-    int i = 0;
-
-    // while (pkg->encrypted_msg[i] != 0)
-    // {
-    //     printf("%lld\n", pkg->encrypted_msg[i]);
-    //     i++;
-    // }
-    
-
-    for (i = 0; i < MAX_USER; i++)
-    {
-        if (strcmp(pkg->receiver, user[i].username) == 0 && user[i].socket > 0)
-        {
-            // recv_socket = user[i].socket;
-            send(user[i].socket, pkg, sizeof(*pkg), 0);
-            printf("Sent %d to %s\n", pkg->ctrl_signal, pkg->receiver);
-            break;
-        }
-    }
-
-    if (i == MAX_USER)
-        pkg->ctrl_signal = ERR_INVALID_RECEIVER;
-    else
-        pkg->ctrl_signal = MSG_SENT_SUCC;
-
-    send(conn_socket, pkg, sizeof(*pkg), 0);
 }
 
 void sv_chat_all(int conn_socket, Package *pkg)
