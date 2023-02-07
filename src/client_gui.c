@@ -133,8 +133,9 @@ void on_send_btn_clicked(GtkButton *btn, gpointer data) {
     if (curr_group_id != -1) {
         group_chat(client_socket, (char *) message);
     } else {
+        int res = check_receiver(client_socket, (char*)receiver);
+        if(res == ERR_INVALID_RECEIVER) return;
         private_chat(client_socket, (char *) receiver, (char *) message);
-
         insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), MYSELF_INDICATOR);
         insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), SPLITER);
         insert_to_textview(GTK_TEXT_VIEW(recv_msg_tv), (gchar *) message);
@@ -154,7 +155,7 @@ void on_receiver_username_confirm_btn_clicked(GtkButton *btn, gpointer data) {
 
     int client_socket = *((int *) data);
     const gchar *receiver = gtk_entry_get_text(GTK_ENTRY(receiver_username_entry));
-    private_chat(client_socket, (char *) receiver, TESTING_MSG);
+    check_receiver(client_socket, (char*)receiver);
 
     gtk_widget_destroy(receiver_username_dialog);
 }
@@ -487,9 +488,11 @@ gpointer recv_handler(gpointer data) {
             //     break;
 
             case ERR_INVALID_RECEIVER:
+                make_done(ERR_INVALID_RECEIVER);
                 gdk_threads_add_idle(recv_err_invalid_receiver, &pkg);
                 break;
             case MSG_SENT_SUCC:
+                make_done(MSG_SENT_SUCC);
                 gdk_threads_add_idle(recv_msg_sent_succ, &pkg);
                 break;
             // case GROUP_CHAT_INIT:
@@ -680,10 +683,16 @@ gboolean recv_msg_sent_succ(gpointer data) {
 
     if (strcmp(pkg_pt->msg, TESTING_MSG) == 0) {
         // if user is in a group room, out of this group room
-        curr_group_id = -1;
-        join_succ = 0;
-        gtk_label_set_text(GTK_LABEL(cur_chat_label), (const gchar *) pkg_pt->receiver);
-        delete_textview_content(GTK_TEXT_VIEW(recv_msg_tv));
+        printf("11\n");
+        const gchar* receiver = gtk_label_get_text(GTK_LABEL(cur_chat_label));
+        if(strcmp(pkg_pt->receiver, receiver) != 0){
+            printf("22\n");
+            curr_group_id = -1;
+            join_succ = 0;
+            gtk_label_set_text(GTK_LABEL(cur_chat_label), (const gchar *) pkg_pt->receiver);
+            delete_textview_content(GTK_TEXT_VIEW(recv_msg_tv));
+        }
+        printf("33\n");
     }
     gtk_widget_grab_focus(send_entry);
 

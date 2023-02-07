@@ -16,6 +16,8 @@ struct private_key_class my_priv[1];
 
 Public_key_users user_pub[1];
 
+int doing = 0;
+
 int connect_to_server()
 {
 
@@ -150,7 +152,8 @@ int login(int client_socket, char *username, char *password)
     // sleep(1);
     if (pkg.ctrl_signal == LOGIN_SUCC){
         strcpy(my_username, username);
-        rsa_gen_keys(my_pub, my_priv, PRIME_SOURCE_FILE);
+        if(my_priv->exponent == 0)
+            rsa_gen_keys(my_pub, my_priv, PRIME_SOURCE_FILE);
         
         printf("Private Key:\n Modulus: %lld\n Exponent: %lld\n", (long long)my_priv->modulus, (long long)my_priv->exponent);
         printf("Public Key:\n Modulus: %lld\n Exponent: %lld\n\n", (long long)my_pub->modulus, (long long)my_pub->exponent);
@@ -173,7 +176,7 @@ void receive_public_key(int client_socket, Package* pkg) {
     strcpy(user_pub->username, pkg->receiver);
     user_pub->public_key->exponent = ((struct public_key_class*)pkg->msg)->exponent;
     user_pub->public_key->modulus = ((struct public_key_class*)pkg->msg)->modulus;
-    // printf("%s %lld %lld\n", user_pub->username, (long long)user_pub->public_key->exponent, (long long)user_pub->public_key->modulus);
+    printf("receive pubkey of %s: %lld %lld\n", user_pub->username, (long long)user_pub->public_key->exponent, (long long)user_pub->public_key->modulus);
 }
 
 int check_public_key(int client_socket, char* username) {
@@ -353,19 +356,47 @@ void see_active_user(int client_socket)
     // recv(client_socket, &pkg, sizeof(pkg), 0);
 }
 
-void private_chat(int client_socket, char *receiver, char *msg)
-{
+void make_done(int msg) {
+    doing = msg;
+}
+
+int check_receiver(int client_socket, char* receiver) {
+    int res;
     Package pkg;
     
     strcpy(pkg.receiver, receiver);
     strcpy(pkg.sender, my_username);
+    strcpy(pkg.msg, TESTING_MSG);
+    pkg.ctrl_signal = PRIVATE_CHAT;
+    doing = 0;
+    send(client_socket, &pkg, sizeof(pkg), 0);
+    printf("ccc\n");
+    while(!doing);
+    printf("dd\n");
+    return doing;
+    // sleep(1);
+}
+
+int private_chat(int client_socket, char *receiver, char *msg)
+{
+    Package pkg;
+    strcpy(pkg.receiver, receiver);
+    strcpy(pkg.sender, my_username);
+    // recv(client_socket, &pkg, sizeof(pkg), 0);
+    // res = pkg.ctrl_signal;
+    // if(res == ERR_INVALID_RECEIVER) {
+    //     printf("No user\n");
+    //     return res;
+    // }
     // strcpy(user_pub->username,NULL_STRING);
+    printf("check key\n");
     int check = check_public_key(client_socket, receiver);
     if(check == 0) {
         user_pub->public_key->exponent = 0;
-        while(user_pub->public_key->exponent == 0);
+        printf("nnn\n");
+        while( !user_pub->public_key->exponent);
+        printf("mmm\n");
     }
-    
 
     printf("Start chatting with %s\n", receiver);
     
@@ -384,14 +415,15 @@ void private_chat(int client_socket, char *receiver, char *msg)
             printf("%lld ", (long long)pkg.encrypted_msg[i]);
         }
         printf("\n");
-        // i = 0;
-        // while (pkg.encrypted_msg[i] != 0) {
-        //     printf("%lld\n", pkg.encrypted_msg[i]);
-        //     i++;
-        // }
-        // printf("\n");
+        i = 0;
+        while (pkg.encrypted_msg[i] != 0) {
+            printf("%lld\n", pkg.encrypted_msg[i]);
+            i++;
+        }
+        printf("\n");
     }
     send(client_socket, &pkg, sizeof(pkg), 0);
+    printf("sent chat\n");
 
         // sleep(1);
     // }

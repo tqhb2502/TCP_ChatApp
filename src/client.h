@@ -9,7 +9,7 @@
 
 #include "rsa.h"
 
-#define TESTING_MSG "#sys_testing#"
+// #define TESTING_MSG "#sys_testing#"
 
 extern struct public_key_class my_pub[1];
 extern struct private_key_class my_priv[1];
@@ -105,7 +105,11 @@ void see_active_user(int client_socket);
  * - Nhập tin nhắn
  * @param client_socket socket đã kết nối đến server
 */
-void private_chat(int client_socket, char *receiver, char *msg);
+int private_chat(int client_socket, char *receiver, char *msg);
+
+void make_done(); 
+
+int check_receiver(int client_socket, char* receiver);
 
 /**
  * Chat all:

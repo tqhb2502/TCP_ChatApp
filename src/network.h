@@ -59,6 +59,9 @@
 #define RECV_PUB_KEY_SUCCESS 504
 #define NO_PUBLIC_KEY -504
 
+#define TESTING_MSG "#sys_testing#"
+
+
 
 //* Cấu trúc gói tin
 typedef struct Package_ {
